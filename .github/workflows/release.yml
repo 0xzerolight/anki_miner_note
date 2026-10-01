@@ -1,0 +1,23 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.2.0
+      - run: uv sync --locked
+      - run: uv run python build/genapkg.py "dist/Anki-Miner-Note-${GITHUB_REF_NAME}.apkg"
+      - uses: softprops/action-gh-release@v3
+        with:
+          draft: true
+          files: dist/Anki-Miner-Note-${{ github.ref_name }}.apkg
+          body: |
+            Import into Anki 23.10 or later. When updating, tick "Merge note types" in the import dialog.
