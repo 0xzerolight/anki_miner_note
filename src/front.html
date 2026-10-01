@@ -30,6 +30,9 @@
     <div id="click" class="tappable">
         <div class="front-vocab">{{Expression}}</div>
     </div>
+    <!-- Anki Miner Note: the sentence the click card turns to, kept out of the script below so that
+         backticks, backslashes and ${ in the text cannot break it. Inert; Browser columns strip it. -->
+    <script type="text/plain" id="click-sentence">{{kanji:Sentence}}</script>
     {{/IsClickCard}}
 
     <!-------- Audio card ----------->
@@ -99,7 +102,7 @@
     const originalContent = clickElement.innerHTML;
 
     // This is what it is going to click to
-    const clickedContent = `<div class="front-sentence">{{kanji:Sentence}}</div>`;
+    const clickedContent = `<div class="front-sentence">${document.getElementById("click-sentence").textContent}</div>`;
 
     function toggleContent() {
       if (clickElement.innerHTML === originalContent) {
@@ -111,7 +114,8 @@
     // Implement the clicking mechanism
     clickElement.addEventListener("click", (e) => toggleContent());
     document.addEventListener("keydown", (e) => {
-      if ((event.key === "c") | (event.key === "C")) toggleContent();
+      if (e.ctrlKey || e.metaKey || e.altKey) return; // Ctrl+C copies; it doesn't flip the card
+      if (e.key === "c" || e.key === "C") toggleContent();
     });
   }
 
@@ -121,9 +125,9 @@
   }
 
   function initialize() {
-    // Check what card type it is
-    if (`{{IsClickCard}}`) ClickCard();
-    if (`{{IsAudioCard}}`) HideTargetWord();
+    // Check what card type it is, from the sections Anki rendered: a toggle holding only <br> or spaces is empty
+    if (document.getElementById("click")) ClickCard();
+    if (document.getElementById("audio")) HideTargetWord();
   }
 
   initialize();
