@@ -80,7 +80,7 @@ def test_plain_reading_yields_to_pinyin(open_card):
 def test_forms_carry_their_own_language(open_card):
     page = open_card(SAMPLES_BY_NAME["zh_hans"].fields).page
     assert page.get_attribute('[data-amn-field="Traditional"]', "lang") == "zh-Hant"
-    page = open_card(SAMPLES_BY_NAME["ko"].fields).page
+    page = open_card({"Expression": "學校", "Sentence": "내일 學校에서 만나요.", "Hanja": "學校"}).page
     assert page.get_attribute('[data-amn-field="Hanja"]', "lang") == "ko"
     page = open_card(SAMPLES_BY_NAME["vi"].fields).page  # HanViet holds the Han characters (博士), not a reading
     assert page.get_attribute('[data-amn-field="HanViet"]', "lang") == "zh-Hant"

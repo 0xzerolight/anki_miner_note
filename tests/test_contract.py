@@ -4,7 +4,7 @@ import re
 from pathlib import Path
 
 import genapkg
-from samples import EXTRAS
+from samples import EXTRAS, SAMPLES
 
 ROOT = Path(__file__).resolve().parent.parent
 LAPIS_MODEL_ID = 1667218449922
@@ -97,3 +97,31 @@ def test_extras_only_inside_their_own_section():
             body for prefix, body in TEMPLATE_REF.findall(outside) if not prefix and body.split(":")[-1].strip() == name
         ]
         assert not stray, f"{name} is referenced outside its own section: {stray}"
+
+
+ANKI_MINER_TONE_COLOURS = {"#e75353", "#be7500", "#199a39", "#4286e5", "#868686", "#a66dd2"}
+TONE_SPAN = r'<span style="color:(#[0-9a-f]{6})">([^<]+)</span>'
+ASPECT_LABELS = {"imperfective", "perfective", "imperfective or perfective"}
+
+
+def test_samples_hold_anki_miner_formats():
+    """Samples are the fixtures and the example deck: each holds what Anki Miner writes (spec §1)."""
+    for sample in SAMPLES:
+        if sample.name == "all_extras":
+            continue
+        fields = sample.fields
+        pos = fields.get("PartOfSpeech", "")
+        assert pos == pos.lower(), sample.name
+        aspect = fields.get("AspectPair", "")
+        assert not aspect or aspect.split(" (")[0] in ASPECT_LABELS, sample.name
+        for name in ("Pinyin", "Jyutping"):
+            value = fields.get(name, "")
+            if value:
+                spans = re.findall(TONE_SPAN, value)
+                assert " ".join(f'<span style="color:{c}">{s}</span>' for c, s in spans) == value, sample.name
+                assert {c for c, _ in spans} <= ANKI_MINER_TONE_COLOURS, sample.name
+                assert fields.get("ExpressionReading") == " ".join(s for _, s in spans), sample.name
+        assert not re.search(r"[A-Za-z]", fields.get("MeasureWord", "")), sample.name
+        if "Formal" in fields:
+            assert fields["Formal"] != fields["Expression"], sample.name
+        assert not fields.get("Frequency") or fields["Frequency"].startswith("<ul><li>"), sample.name
