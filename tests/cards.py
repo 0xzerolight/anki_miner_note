@@ -1,5 +1,6 @@
 """Render Anki Miner Note cards with Anki's own template engine, for viewing in Chromium."""
 
+import base64
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -10,6 +11,12 @@ from playwright.sync_api import Page
 import genapkg
 
 ARTIFACTS = Path(__file__).resolve().parent.parent / "test-artifacts"
+# A 16:9 picture like the screenshot Anki Miner puts on every card (inline, so the test needs no media).
+PICTURE = '<img src="data:image/svg+xml;base64,{}">'.format(
+    base64.b64encode(
+        b'<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360"><rect width="640" height="360"/></svg>'
+    ).decode()
+)
 CARD_TYPES: tuple[str | None, ...] = (None, "IsWordAndSentenceCard", "IsClickCard", "IsSentenceCard", "IsAudioCard")
 
 

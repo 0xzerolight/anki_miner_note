@@ -2,7 +2,7 @@
 
 import pytest
 
-from cards import CARD_TYPES
+from cards import CARD_TYPES, PICTURE
 from samples import SAMPLES, SAMPLES_BY_NAME
 
 pytestmark = pytest.mark.render
@@ -11,7 +11,9 @@ REGION_SERIF = {
     "zh": "Noto Serif CJK SC",
     "zh-Hans": "Noto Serif CJK SC",
     "zh-Hant": "Noto Serif CJK TC",
+    "zh-TW": "Noto Serif CJK TC",
     "yue": "Noto Serif CJK HK",
+    "zh-MO": "Noto Serif CJK HK",
     "ko": "Noto Serif CJK KR",
 }
 LAPIS_SERIF = [
@@ -114,5 +116,20 @@ def test_thai_gets_taller_lines(open_card):
 @pytest.mark.parametrize("card_type", CARD_TYPES, ids=lambda c: c or "word")
 @pytest.mark.parametrize("side", ["front", "back"])
 def test_no_horizontal_overflow_on_mobile(open_card, sample, card_type, side):
-    page = open_card(sample.fields, card_type=card_type, side=side, mobile=True).page
+    """Real Anki Miner cards carry a screenshot, so every card here does too."""
+    page = open_card({**sample.fields, "Picture": PICTURE}, card_type=card_type, side=side, mobile=True).page
     assert page.evaluate("document.documentElement.scrollWidth <= document.documentElement.clientWidth")
+
+
+@pytest.mark.parametrize("sample", SAMPLES, ids=lambda s: s.name)
+def test_picture_stays_inside_its_box_on_desktop(open_card, sample):
+    """Extras make .dh-vocab taller, and Lapis sizes the picture to that height."""
+    page = open_card({**sample.fields, "Picture": PICTURE}).page
+    overflow = page.evaluate(
+        """() => {
+            const box = document.querySelector(".dh-image").getBoundingClientRect();
+            const img = document.querySelector(".dh-image img").getBoundingClientRect();
+            return img.right - box.right;
+        }"""
+    )
+    assert overflow <= 0.5

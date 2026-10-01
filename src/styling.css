@@ -1213,13 +1213,15 @@ html.mobile .sentence, html:not(.mobile) .sentence-alt,
   --cjk-sans: "PingFang SC", "Noto Sans CJK SC", "Noto Sans SC", "Microsoft YaHei";
 }
 
-:lang(zh-Hant) {
+:lang(zh-Hant),
+:lang(zh-TW) {
   --cjk-serif: "Songti TC", "Noto Serif CJK TC", "Noto Serif TC", PMingLiU;
   --cjk-sans: "PingFang TC", "Noto Sans CJK TC", "Noto Sans TC", "Microsoft JhengHei";
 }
 
 :lang(yue),
-:lang(zh-HK) {
+:lang(zh-HK),
+:lang(zh-MO) {
   --cjk-serif: "Noto Serif CJK HK", "Noto Serif HK", "Songti TC";
   --cjk-sans: "PingFang HK", "Noto Sans CJK HK", "Noto Sans HK", "Microsoft JhengHei";
 }
@@ -1245,6 +1247,12 @@ html.mobile .sentence, html:not(.mobile) .sentence-alt,
 /* Thai stacks vowels and tone marks above and below the line. */
 :is(.front-vocab, .front-sentence, #hint, .vocab, .sentence, .sentence-alt):lang(th) {
   line-height: 1.8;
+}
+
+/* Extras and wrapped headwords make .dh-vocab taller, and Lapis's setDHHeight() sizes the picture to
+   that height; cap its width so it stays inside its box instead of widening the card. */
+.image img {
+  max-width: 100%;
 }
 
 /* Long unbroken words (German compounds, unspaced Thai) wrap instead of widening the card. */
