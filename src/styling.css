@@ -1333,11 +1333,18 @@ html.mobile .sentence, html:not(.mobile) .sentence-alt,
   --gender-common: var(--light-mode-gender-common);
 }
 
-/* Empty rows have no children, no padding and no margin, so they take no space. */
+/* Empty rows have no children, no padding and no margin, so they take no space. The line height is fixed,
+   because Noto Sans Arabic's normal one (about 2.1em) would double-space wrapped extras. */
 .amn-extras {
   font-family: var(--font-sans);
   font-size: var(--info-font-size);
+  line-height: 1.5;
   overflow-wrap: anywhere;
+}
+
+/* On phones the audio buttons leave .info (position: fixed), so its <br> only adds a blank line. */
+.mobile .info > br {
+  display: none;
 }
 
 .amn-readings,

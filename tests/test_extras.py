@@ -65,6 +65,46 @@ def test_no_extras_take_no_space(open_card):
     assert page.locator(".amn-chip-label").count() == 0
 
 
+def test_extras_line_height_does_not_follow_the_arabic_face(open_card):
+    """Noto Sans Arabic leads the ar/fa sans stack; line-height: normal would make each extras line about 2.1em."""
+    fields = {
+        "Expression": '<div dir="rtl" lang="fa">رفتن</div>',
+        "Sentence": '<div dir="rtl" lang="fa">من هر روز به مدرسه می‌روم.</div>',
+        "Romanization": "raftan",
+    }
+    page = open_card(fields).page
+    assert page.eval_on_selector(".amn-extras", "e => getComputedStyle(e).lineHeight") != "normal"
+    ratio = page.eval_on_selector(
+        '[data-amn-field="Romanization"]',
+        "e => e.getBoundingClientRect().height / parseFloat(getComputedStyle(e).fontSize)",
+    )
+    assert ratio <= 1.6, ratio
+
+
+PINYIN = '<span style="color:#be7500">yín</span> <span style="color:#be7500">háng</span>'
+
+
+@pytest.mark.parametrize(
+    "fields,below",
+    [
+        ({"Expression": "銀行", "Pinyin": PINYIN}, ".amn-reading"),
+        ({"Expression": "嘢", "Jyutping": '<span style="color:#a66dd2">je5</span>'}, ".amn-reading"),
+        ({"Expression": "کتاب", "Romanization": "ketâb"}, ".amn-reading"),
+        ({"Expression": "Hund", "Gender": "der"}, ".amn-chip"),
+    ],
+    ids=["pinyin", "jyutping", "romanization", "chip"],
+)
+def test_no_blank_reading_line_on_mobile(open_card, fields, below):
+    """On phones the audio buttons leave .info; its <br> must not leave a blank line under the headword."""
+    page = open_card(fields, mobile=True).page
+    gap = page.evaluate(
+        "below => document.querySelector(below).getBoundingClientRect().top"
+        " - document.querySelector('.vocab').getBoundingClientRect().bottom",
+        below,
+    )
+    assert gap < 20, gap
+
+
 def test_pinyin_keeps_tone_colour_markup(open_card):
     page = open_card(SAMPLES_BY_NAME["zh_hans"].fields).page
     assert page.locator('[data-amn-field="Pinyin"] span[style*="color"]').count() == 2
