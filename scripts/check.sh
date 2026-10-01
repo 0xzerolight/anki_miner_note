@@ -19,7 +19,7 @@ if [[ "${SKIP_ANKI_MINER_MAPPING:-0}" != "1" && -x "$mapping_python" ]]; then
   echo "==> anki_miner mapping check ($mapping_python)"
   "$mapping_python" scripts/check_anki_miner_mapping.py
   rc=$?
-  if [[ $rc -eq 1 ]]; then status=1; elif [[ $rc -eq 2 ]]; then echo "(mapping check skipped)"; fi
+  if [[ $rc -eq 2 ]]; then echo "(mapping check skipped)"; elif [[ $rc -ne 0 ]]; then status=1; fi
 else
   echo "==> anki_miner mapping check skipped"
 fi

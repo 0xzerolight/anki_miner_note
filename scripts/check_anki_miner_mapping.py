@@ -3,7 +3,7 @@
 
 Run it with Anki Miner's interpreter:
     ~/Projects/anki_miner/.venv/bin/python scripts/check_anki_miner_mapping.py
-Exit 0: every language maps (known gaps allowed). 1: a regression. 2: anki_miner not importable (skip).
+Exit 0: every language maps (known gaps allowed). 1: a regression. 2: anki_miner not installed (skip).
 """
 
 import sys
@@ -18,6 +18,7 @@ CORE_KEYS = (
     "picture",
     "audio",
     "expression_audio",
+    "expression_reading",
     "sentence_translation",
 )
 # Fields Anki Miner cannot fill yet; the Anki Miner integration closes each. ja: the Lapis preset maps no
@@ -28,12 +29,14 @@ KNOWN_GAPS = {("ja", "sentence_translation"), ("he", "POS"), ("th", "Reading")}
 
 def main() -> int:
     try:
-        from anki_miner.languages import AVAILABLE_LANGUAGES
-        from anki_miner.languages.registry import get_profile
-        from anki_miner.services.note_presets import fill_note_type_fields
-    except ImportError as exc:
-        print(f"SKIP: anki_miner is not importable ({exc})")
+        import anki_miner  # noqa: F401
+    except ModuleNotFoundError as exc:
+        print(f"SKIP: anki_miner is not installed ({exc})")
         return 2
+    # anki_miner is installed: a missing name below is an API change, so let it fail the gate.
+    from anki_miner.languages import AVAILABLE_LANGUAGES
+    from anki_miner.languages.registry import get_profile
+    from anki_miner.services.note_presets import fill_note_type_fields
 
     fields = LOCK.read_text(encoding="utf-8").split()
     failed = []
