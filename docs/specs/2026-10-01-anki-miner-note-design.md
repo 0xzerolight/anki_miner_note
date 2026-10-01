@@ -81,7 +81,7 @@ Miner supports, Japanese included.
 | Traditional | zh | `expression_traditional` |
 | MeasureWord | zh, yue | `measure_word` |
 | Hanja | ko | `hanja` |
-| HanViet | vi | `hanviet` |
+| HanViet | vi | `hanviet` (the Han characters a Sino-Vietnamese word is read from) |
 | Gender | de, fr, es, pt, ca, it, el, ru, uk, pl, lt, he, … | `noun_gender` |
 | Article | da, it, nl, nb, sv | `noun_article` |
 | Plural | de, he, sl, sv | `noun_plural` |
@@ -121,13 +121,16 @@ Known gaps, all closed by the later integration:
     `zh-Hans`, `zh-Hant`, `yue`, `ko`, `vi`, `ar`, `fa`, `he`, `th`, `de`, and so on.
   - Every hardcoded `lang="ja"` in Lapis's templates goes; descendants inherit the root `lang`.
 - **Inference fallback**
-  - When `Language` is empty, an inline script of about 30 lines sets the root `lang` from the
-    text of Expression and Sentence.
-  - It applies the first rule that matches:
+  - When `Language` is empty, an inline script sets the root `lang`. It first takes the first
+    `lang="…"` that Anki Miner wrote inside Expression or Sentence (see "Inline tags" below).
+    Without one, it guesses from the text of Expression, Sentence, ExpressionFurigana and
+    ExpressionReading; the reading fields let a kanji-only Japanese sentence (大丈夫？) still count
+    as Japanese.
+  - The guess applies the first rule that matches:
 
     | Text contains | `lang` |
     |---|---|
-    | kana (U+3040–30FF) | `ja` |
+    | kana, excluding ・ and ー (Chinese uses them in foreign names) | `ja` |
     | Hangul | `ko` |
     | Thai | `th` |
     | Hebrew | `he` |
@@ -141,7 +144,8 @@ Known gaps, all closed by the later integration:
   - Anki Miner wraps RTL word and sentence fields in `<div dir="rtl" lang="…">`, and the Chinese
     sentence in `<span lang="zh-Hans|zh-Hant">` (anki_miner `services/anki_note_builder.py`,
     `_rtl_wrap` and `_lang_wrap`).
-  - These inner tags win over the root, and the CSS must not fight them.
+  - These inner tags win over the root, and the CSS must not fight them: text inside them takes
+    their language's font stack.
 - **Without JS** the card stays legible: neutral font stacks, Latin first.
 - **Fonts**: CSS `:lang()` rules, system fonts only, nothing bundled.
   - The base stacks for headword, sentence and body are Latin-first, sans and serif. This fixes
@@ -149,8 +153,12 @@ Known gaps, all closed by the later integration:
   - Each CJK tag gets its own stack, so Han characters take the right regional shapes:
     `:lang(ja)` (Lapis's current stacks move here), `:lang(zh)`/`:lang(zh-Hans)`,
     `:lang(zh-Hant)`, `:lang(yue)` and `:lang(ko)`.
+  - Japanese keeps Lapis's exact stacks, and Chinese and Cantonese put CJK faces first in the
+    serif stack. Either way, CJK punctuation (、。“ ” ……) keeps its full-width forms.
   - `:lang(ar)`, `:lang(fa)` and `:lang(he)` get an Arabic or Hebrew stack. `:lang(th)` gets a
-    Thai stack and a taller line height.
+    Thai stack and a taller line height. These faces lead for their own language.
+  - The front's two `#hint` blocks carry `dir="auto"`, so an English hint on an Arabic card stays
+    left-to-right.
 - **Direction**
   - For ar, fa and he, the word and sentence blocks are right-to-left.
   - The glossary and definition stay left-to-right, because their dictionaries are usually
@@ -163,8 +171,9 @@ Known gaps, all closed by the later integration:
 - **Back.** Lapis's layout, definitions, picture, audio, frequency and pitch display stay as they
   are. Each addition is wrapped in `{{#Field}}…{{/Field}}`, so an empty field leaves no markup:
   - **Reading line** under the headword: Pinyin and Jyutping (raw HTML, not `text:`),
-    Romanization, Transliteration, HanViet.
-  - **Alternate forms**: Traditional, Hanja.
+    Romanization, Transliteration.
+  - **Alternate forms**: Traditional, Hanja, HanViet. Each carries its own `lang`
+    (`zh-Hant`, `ko`, `zh-Hant`), so it takes the matching CJK font.
   - **Chip row**: Article, Gender, Plural, PartOfSpeech, MeasureWord, Classifier, AspectPair, Root,
     Binyan, PresentStem, Colloquial, Formal, Affixes, Segmentation, Grammar. Each chip has a short
     English label; translating the labels is out of scope for v1.
