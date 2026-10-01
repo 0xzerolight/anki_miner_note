@@ -28,8 +28,17 @@
   --mobile-info-font-size: 16px;
 
   /* Miscellaneous */
-  --font-serif: "Hiragino Mincho ProN", "Noto Serif CJK JP", "Noto Serif JP", "Yu Mincho", HanaMinA, HanaMinB, serif;
-  --font-sans: "Inter", "SF Pro Display", "Liberation Sans", "Segoe UI", "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP", "Noto Sans JP", "Meiryo", HanaMinA, HanaMinB, sans-serif;
+  /* Fonts (Anki Miner Note). Latin faces come first, so ł, ş and ő keep one face.
+     --cjk-* holds the regional CJK faces (set per language at the end of this file).
+     --script-* holds Arabic, Hebrew and Thai faces: per-glyph fallbacks, leading for ar, fa, he and th.
+     --font-serif and --font-sans are composed on #lapis; customise the parts here.
+     The per-language stacks are in the LANGUAGES section at the end of this file. */
+  --latin-serif: "Noto Serif", "Source Serif 4", Georgia, "Times New Roman";
+  --latin-sans: "Inter", "SF Pro Display", "Segoe UI", "Noto Sans", "Liberation Sans";
+  --cjk-serif: "Hiragino Mincho ProN", "Noto Serif CJK JP", "Noto Serif JP", "Yu Mincho", HanaMinA, HanaMinB;
+  --cjk-sans: "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP", "Noto Sans JP", "Meiryo", HanaMinA, HanaMinB;
+  --script-serif: "Noto Naskh Arabic", "Noto Serif Hebrew", "Noto Serif Thai";
+  --script-sans: "Noto Sans Arabic", "Noto Sans Hebrew", "Noto Sans Thai", "Leelawadee UI", Tahoma;
   --light-mode-image-brightness: 85%;
   --dark-mode-image-brightness: 80%;
   --light-mode-tooltip-hover-color: rgb(256, 256, 256, 0.9);
@@ -1144,4 +1153,106 @@ html.mobile .sentence, html:not(.mobile) .sentence-alt,
       content: "";
     }
   }
+}
+
+/*
+ *  ANKI MINER NOTE: LANGUAGES
+ *  The root #lapis carries lang (from the Language field or inferred by script#amn-lang).
+ */
+
+/* Compose the stacks where the language is known. Custom properties inherit already substituted,
+   so they must be composed on the element whose --cjk-* is set, not on :root. */
+#lapis,
+#lapis [lang] {
+  --font-serif: var(--latin-serif), var(--cjk-serif), var(--script-serif), serif;
+  --font-sans: var(--latin-sans), var(--cjk-sans), var(--script-sans), sans-serif;
+}
+
+/* Japanese keeps Lapis's stacks: Mincho first, so punctuation and digits in Japanese text stay full-width. */
+#lapis:lang(ja),
+#lapis [lang]:lang(ja) {
+  --font-serif: var(--cjk-serif), serif;
+  --font-sans: "Inter", "SF Pro Display", "Liberation Sans", "Segoe UI", var(--cjk-sans), sans-serif;
+}
+
+/* Chinese and Cantonese: CJK faces lead the serif stack, so “ ” …… —— keep their full-width forms.
+   Sans stays Latin-first, so pinyin and jyutping use a Latin face. */
+#lapis:is(:lang(zh), :lang(yue)),
+#lapis [lang]:is(:lang(zh), :lang(yue)) {
+  --font-serif: var(--cjk-serif), var(--latin-serif), serif;
+}
+
+/* Arabic, Persian, Hebrew and Thai faces lead for their own language. Otherwise Latin faces that also
+   cover those scripts (Times New Roman, Segoe UI, Tahoma) would take the glyphs first. */
+:lang(ar),
+:lang(fa) {
+  --script-serif: "Noto Naskh Arabic", "Geeza Pro", "Traditional Arabic";
+  --script-sans: "Noto Sans Arabic", "Geeza Pro", "Segoe UI";
+}
+
+:lang(he) {
+  --script-serif: "Noto Serif Hebrew", "Times New Roman";
+  --script-sans: "Noto Sans Hebrew", "Arial Hebrew", "Segoe UI";
+}
+
+:lang(th) {
+  --script-serif: "Noto Serif Thai", "Thonburi", "Leelawadee UI";
+  --script-sans: "Noto Sans Thai", "Thonburi", "Leelawadee UI";
+}
+
+#lapis:is(:lang(ar), :lang(fa), :lang(he), :lang(th)),
+#lapis [lang]:is(:lang(ar), :lang(fa), :lang(he), :lang(th)) {
+  --font-serif: var(--script-serif), var(--latin-serif), serif;
+  --font-sans: var(--script-sans), var(--latin-sans), sans-serif;
+}
+
+/* Regional CJK faces: the same Han codepoint is drawn differently in each region.
+   zh-Hant and yue come after zh, which also matches them. */
+:lang(zh) {
+  --cjk-serif: "Songti SC", "Noto Serif CJK SC", "Noto Serif SC", SimSun;
+  --cjk-sans: "PingFang SC", "Noto Sans CJK SC", "Noto Sans SC", "Microsoft YaHei";
+}
+
+:lang(zh-Hant) {
+  --cjk-serif: "Songti TC", "Noto Serif CJK TC", "Noto Serif TC", PMingLiU;
+  --cjk-sans: "PingFang TC", "Noto Sans CJK TC", "Noto Sans TC", "Microsoft JhengHei";
+}
+
+:lang(yue),
+:lang(zh-HK) {
+  --cjk-serif: "Noto Serif CJK HK", "Noto Serif HK", "Songti TC";
+  --cjk-sans: "PingFang HK", "Noto Sans CJK HK", "Noto Sans HK", "Microsoft JhengHei";
+}
+
+:lang(ko) {
+  --cjk-serif: "AppleMyungjo", "Noto Serif CJK KR", "Noto Serif KR", Batang;
+  --cjk-sans: "Apple SD Gothic Neo", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic";
+}
+
+/* Anki Miner tags the language inside a field (<span lang="zh-Hant">, <div lang="ar">). font-family
+   inherits as an already-computed list, so re-declare it there to pick up that language's stack. */
+:is(.front-vocab, .front-sentence, #hint, .vocab, .sentence, .sentence-alt) [lang] {
+  font-family: var(--font-serif);
+}
+
+/* Right-to-left mining languages: the word, its reading and the sentence run RTL.
+   The definition box keeps the document direction, because its dictionaries are usually English. */
+:is(.front-vocab, .front-sentence, .vocab, .pitch, .sentence, .sentence-alt):is(:lang(ar), :lang(fa), :lang(he)) {
+  direction: rtl;
+  unicode-bidi: isolate;
+}
+
+/* Thai stacks vowels and tone marks above and below the line. */
+:is(.front-vocab, .front-sentence, #hint, .vocab, .sentence, .sentence-alt):lang(th) {
+  line-height: 1.8;
+}
+
+/* Long unbroken words (German compounds, unspaced Thai) wrap instead of widening the card. */
+.front-vocab,
+.front-sentence,
+#hint,
+.vocab,
+.sentence,
+.sentence-alt {
+  overflow-wrap: anywhere;
 }
