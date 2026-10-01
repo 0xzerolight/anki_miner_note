@@ -271,7 +271,7 @@
             return pitchArray.length === 1 ? pitchArray[0].position : pitchArray;
         }
 
-        const fieldText = `{{text:PitchPosition}}`;
+        const fieldText = document.getElementById("pitch-tags").textContent; // not a JS literal: a \ downstep mark breaks one
         // Pitch numbers not in a n+m pattern
         const pitchNumbers = fieldText.matchAll(/(?<!\d\+)\d+(?!\+\d)/g) || [];
         // Custom pitch strings -- (?!:) to filter out JL pitch format
@@ -453,10 +453,13 @@
             return primaryDict.innerHTML.trim() === glossariesDict.innerHTML.trim();
         }
 
-        // multiple dicts
-        const primaryDicts = document.querySelectorAll("#primary li[data-dictionary]");
-        const glossariesDicts = document.querySelectorAll("#glossaries li[data-dictionary]");
-        return primaryDicts.length === glossariesDicts.length;
+        // multiple dicts: Glossaries is redundant when hideCorrectDefinition would hide every dictionary in it
+        const primaryNames = new Set(
+            Array.from(document.querySelectorAll("#primary li[data-dictionary]"), (dict) => dict.dataset.dictionary));
+        const glossariesDicts = Array.from(document.querySelectorAll("#glossaries li[data-dictionary]"));
+        // A hand-written list names no dictionary: keep the old rule (redundant only when neither names one)
+        if (glossariesDicts.length === 0) return primaryNames.size === 0;
+        return glossariesDicts.every((dict) => primaryNames.has(dict.dataset.dictionary));
     }
 
     // Removes Unnecessary definitions
@@ -614,7 +617,11 @@
         let primaryDicts = document.querySelectorAll("#primary li[data-dictionary]");
         let firstList = document.querySelector("#primary .yomitan-glossary > ol:has(li[data-dictionary])");
         for (let idx = 1; idx < primaryDicts.length; idx++) {
+            // Anki Miner writes one glossary per dictionary (yue stacks them): drop each wrapper the move empties.
+            // Yomitan keeps each dictionary's scoped <style> inside its wrapper, so a wrapper holding one stays.
+            const emptied = primaryDicts[idx].closest(".yomitan-glossary");
             firstList.appendChild(primaryDicts[idx]);
+            if (emptied && !emptied.querySelector("li[data-dictionary], style")) emptied.remove();
         }
     }
 
