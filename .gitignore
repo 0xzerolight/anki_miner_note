@@ -3,3 +3,20 @@ __pycache__/
 dist/
 test-artifacts/
 check.log
+
+# Local-only planning / agent dirs (same convention as the anki_miner desktop repo)
+.claude/
+/AGENTS.md
+# Private development docs; the public ones are re-included below. git cannot re-include a path
+# under an excluded directory, so docs/ is excluded by its contents rather than as a whole.
+docs/*
+!docs/anki_setup.md
+!docs/jl_setup.md
+!docs/manual_reordering.md
+!docs/updating_cards.md
+!docs/user_settings.md
+.claude-runner/
+.codex
+sdd/
+.agents
+/.worktrees/
