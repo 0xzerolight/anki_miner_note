@@ -1308,10 +1308,11 @@ html.mobile .sentence, html:not(.mobile) .sentence-alt,
  *  ANKI MINER NOTE: EXTRAS
  */
 :root {
-  --light-mode-gender-masc: #1f6fd1;
-  --light-mode-gender-fem: #d02f5a;
-  --light-mode-gender-neut: #2f8f4e;
-  --light-mode-gender-common: #8a5cc2;
+  /* Light values reach 4.5:1 on the desktop word box (#f7f3e9), where the chips sit. */
+  --light-mode-gender-masc: #1a65c4;
+  --light-mode-gender-fem: #c42a52;
+  --light-mode-gender-neut: #24773f;
+  --light-mode-gender-common: #7f50b8;
   --dark-mode-gender-masc: #6aa8ff;
   --dark-mode-gender-fem: #ff7b9c;
   --dark-mode-gender-neut: #6fd08f;
@@ -1404,4 +1405,20 @@ html.mobile .sentence, html:not(.mobile) .sentence-alt,
   font-size: var(--info-font-size);
   color: var(--fg-subtle);
   margin-top: 0.2em;
+}
+
+/* Lapis's night --fg-subtle (30% white, about 2.6:1) is too faint for text the reader needs:
+   chip labels need 3:1 and the sentence translation 4.5:1. */
+.card.nightMode :is(.amn-chip-label, .amn-translation) {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Anki Miner writes Pinyin and Jyutping tone colours inline, one shade for both themes (about 3.5:1 on each).
+   Shift them toward the text colour so the reading line keeps 4.5:1. */
+.card:not(.nightMode) .amn-reading span[style*="color"] {
+  filter: brightness(0.75);
+}
+
+.card.nightMode .amn-reading span[style*="color"] {
+  filter: brightness(1.3);
 }

@@ -121,8 +121,12 @@ def test_forms_carry_their_own_language(open_card):
 def test_gender_colour(open_card, value, kind, night):
     page = open_card({"Expression": "x", "Gender": value}, night=night).page
     actual = page.eval_on_selector(".amn-gender", "e => getComputedStyle(e).color")
-    expected = css_color(page, f"var(--gender-{kind})" if kind else "var(--fg-color)")
-    assert actual == expected
+    plain = css_color(page, "var(--fg-color)")
+    if kind is None:
+        assert actual == plain
+    else:
+        assert actual == css_color(page, f"var(--gender-{kind})")
+        assert actual != plain, "the --gender-* token is missing, so the chip fell back to the text colour"
 
 
 def test_sentence_translation_on_back_only(open_card):
@@ -139,3 +143,62 @@ def test_translation_stays_ltr_under_rtl_sentence(open_card):
     fields = {**SAMPLES_BY_NAME["ar"].fields, "SentenceTranslation": "I read a nice book."}
     page = open_card(fields).page
     assert page.eval_on_selector(".sentence .amn-translation", "e => getComputedStyle(e).direction") == "ltr"
+
+
+# WCAG contrast of an element's text: the ancestors' background colours composited over white, then the
+# text colour, after the element's own brightness() filter, composited over that.
+CONTRAST_JS = """e => {
+    const rgba = (c) => {
+        const v = c.match(/[\\d.]+/g).map(Number);
+        return [v[0], v[1], v[2], v.length > 3 ? v[3] : 1];
+    };
+    const over = (top, under) => top.slice(0, 3).map((v, i) => v * top[3] + under[i] * (1 - top[3]));
+    const layers = [];
+    for (let n = e; n; n = n.parentElement) layers.unshift(rgba(getComputedStyle(n).backgroundColor));
+    let bg = [255, 255, 255];
+    for (const layer of layers) bg = over(layer, bg);
+    const brightness = /brightness\\(([\\d.]+)\\)/.exec(getComputedStyle(e).filter);
+    const k = brightness ? Number(brightness[1]) : 1;
+    const [r, g, b, a] = rgba(getComputedStyle(e).color);
+    const fg = over([r * k, g * k, b * k].map((v) => Math.min(255, v)).concat(a), bg);
+    const lin = (v) => ((v /= 255) <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+    const lum = (c) => 0.2126 * lin(c[0]) + 0.7152 * lin(c[1]) + 0.0722 * lin(c[2]);
+    const [hi, lo] = [lum(fg), lum(bg)].sort((x, y) => y - x);
+    return (hi + 0.05) / (lo + 0.05);
+}"""
+MUTED = {
+    "Expression": "Hund",
+    "Sentence": "Der Hund schläft.",
+    "SentenceTranslation": "The dog is sleeping.",
+    "PartOfSpeech": "noun",
+}
+# Anki Miner's tone palette (zh/render.py, yue/render.py), written inline as style="color:#…"
+TONE_COLOURS = ("#e75353", "#be7500", "#199a39", "#4286e5", "#868686", "#a66dd2")
+
+
+@pytest.mark.parametrize("mobile", [False, True], ids=["desktop", "mobile"])
+@pytest.mark.parametrize("night", [False, True], ids=["light", "night"])
+def test_chip_label_and_translation_contrast(open_card, night, mobile):
+    page = open_card(MUTED, night=night, mobile=mobile).page
+    translation = ".sentence-alt .amn-translation" if mobile else ".sentence .amn-translation"
+    assert page.eval_on_selector(translation, CONTRAST_JS) >= 4.5
+    assert page.eval_on_selector(".amn-chip-label", CONTRAST_JS) >= 3
+
+
+@pytest.mark.parametrize("value", ["der", "die", "das", "common"])
+@pytest.mark.parametrize("mobile", [False, True], ids=["desktop", "mobile"])
+@pytest.mark.parametrize("night", [False, True], ids=["light", "night"])
+def test_gender_chip_contrast(open_card, value, mobile, night):
+    page = open_card({"Expression": "Wort", "Gender": value}, mobile=mobile, night=night).page
+    assert page.eval_on_selector(".amn-gender", CONTRAST_JS) >= 4.5
+
+
+@pytest.mark.parametrize("field", ["Pinyin", "Jyutping"])
+@pytest.mark.parametrize("mobile", [False, True], ids=["desktop", "mobile"])
+@pytest.mark.parametrize("night", [False, True], ids=["light", "night"])
+def test_tone_colours_reach_reading_contrast(open_card, field, mobile, night):
+    spans = " ".join(f'<span style="color:{colour}">ba{tone}</span>' for tone, colour in enumerate(TONE_COLOURS, 1))
+    page = open_card({"Expression": "八", field: spans}, mobile=mobile, night=night).page
+    ratios = page.eval_on_selector_all(f'[data-amn-field="{field}"] span', f"els => els.map({CONTRAST_JS})")
+    assert len(ratios) == len(TONE_COLOURS)
+    assert min(ratios) >= 4.5, [round(ratio, 2) for ratio in ratios]
