@@ -1161,7 +1161,8 @@ html.mobile .sentence, html:not(.mobile) .sentence-alt,
  */
 
 /* Compose the stacks where the language is known. Custom properties inherit already substituted,
-   so they must be composed on the element whose --cjk-* is set, not on :root. */
+   so they must be composed on the element whose --cjk-* is set, not on :root.
+   This base stack stays neutral and Latin-first, so a card with no lang (JS off) is still legible. */
 #lapis,
 #lapis [lang] {
   --font-serif: var(--latin-serif), var(--cjk-serif), var(--script-serif), serif;
@@ -1255,7 +1256,8 @@ html.mobile .sentence, html:not(.mobile) .sentence-alt,
   max-width: 100%;
 }
 
-/* Long unbroken words (German compounds, unspaced Thai) wrap instead of widening the card. */
+/* Long unbroken words (German compounds, unspaced Thai) wrap instead of widening the card,
+   down to a 390 px phone width (test_no_horizontal_overflow_on_mobile). */
 .front-vocab,
 .front-sentence,
 #hint,
@@ -1332,7 +1334,8 @@ html.mobile .sentence, html:not(.mobile) .sentence-alt,
   font-size: 0.75em;
 }
 
-/* Gender: Anki Miner writes a language's own label (der/die/das, le/la, м./ж./с., …). */
+/* Gender: Anki Miner writes a language's own label (der/die/das, le/la, м./ж./с., …).
+   The mark after ז and נ in the Hebrew labels is U+05F3 HEBREW PUNCTUATION GERESH, not an apostrophe. */
 .amn-gender:is([data-gender="masculine" i], [data-gender="der" i], [data-gender="le" i], [data-gender="el" i],
   [data-gender="o" i], [data-gender="m" i], [data-gender="m pers" i], [data-gender="m anim" i],
   [data-gender="m inan" i], [data-gender="ο"], [data-gender="м."], [data-gender="ч."], [data-gender="ז׳"]) {

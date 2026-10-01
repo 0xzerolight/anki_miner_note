@@ -56,7 +56,8 @@ EXTRAS = (
     "Segmentation",
 )
 
-# Shipped in the example deck: the spec's 14 script groups. de_compound, id, en and all_extras are test-only.
+# Shipped in the example deck: 14 samples, one per script group. ja_kanji, de_compound, id, en and all_extras
+# are test-only.
 # Like Anki Miner today, most samples leave Language empty: the root lang then comes from the lang="…"
 # Anki Miner writes inside the word or sentence, else from the script of the text.
 SAMPLES: tuple[Sample, ...] = (

@@ -1,5 +1,6 @@
 # Field order is a contract: append new fields at the end, never rename, remove or reorder.
-# build/fields.lock pins the shipped list.
+# build/fields.lock pins the shipped list: append a new field there too (test_fields_are_lock_plus_appended).
+# No field carries a font key: Lapis's Japanese editor font would draw every language in a Japanese face.
 # Lapis core (names byte-exact, so Lapis presets and Yomitan setups keep working)
 - name: Expression
   size: 50
@@ -33,7 +34,8 @@
 # Added core
 - name: SentenceTranslation
 - name: Language
-# Per-language extras, named after Anki Miner's CardFieldSpec placeholders
+# Per-language extras, named after Anki Miner's CardFieldSpec placeholders.
+# Each carries collapsed: true, so the editor stays short.
 - name: Pinyin
   collapsed: true
 - name: Jyutping

@@ -20,7 +20,9 @@ CORE_KEYS = (
     "expression_audio",
     "sentence_translation",
 )
-# Closed by the Anki Miner integration (spec §2, "Known gaps").
+# Fields Anki Miner cannot fill yet; the Anki Miner integration closes each. ja: the Lapis preset maps no
+# SentenceTranslation. he: its part-of-speech placeholder is POS, not PartOfSpeech. th: its Paiboon reading
+# placeholder is Reading, which has no field here.
 KNOWN_GAPS = {("ja", "sentence_translation"), ("he", "POS"), ("th", "Reading")}
 
 

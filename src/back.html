@@ -1,5 +1,6 @@
 <div id="lapis" lang="{{text:Language}}">
     <!-- Anki Miner Note: raw word, sentence and reading for the language fallback (see script#amn-lang).
+         The readings still tag a Japanese card ja when its sentence has no kana.
          Inert, and Anki's Browser columns strip script contents. -->
     <script type="text/plain" id="amn-lang-source">{{Expression}} {{Sentence}} {{ExpressionFurigana}} {{ExpressionReading}}</script>
     <!---------- Header ------------->
@@ -44,8 +45,11 @@
                     <div class="audio-buttons"></div>
                 </div>
 
-                <!-- Anki Miner Note: per-language extras; each piece renders only when its field is filled -->
+                <!-- Anki Miner Note: per-language extras; each piece renders only when its field is filled.
+                     Reference an extra only inside its own section, so an empty field leaves no markup
+                     (test_extras_only_inside_their_own_section). -->
                 <div class="amn-extras">
+                    <!-- Pinyin and Jyutping arrive as tone-coloured HTML: render them raw, never through the text: filter. -->
                     <div class="amn-readings">
                         {{#Pinyin}}<span class="amn-reading" data-amn-field="Pinyin">{{Pinyin}}</span>{{/Pinyin}}
                         {{#Jyutping}}<span class="amn-reading" data-amn-field="Jyutping">{{Jyutping}}</span>{{/Jyutping}}
@@ -57,6 +61,7 @@
                         {{#Hanja}}<span class="amn-form" data-amn-field="Hanja" lang="ko">{{Hanja}}</span>{{/Hanja}}
                         {{#HanViet}}<span class="amn-form" data-amn-field="HanViet" lang="zh-Hant">{{HanViet}}</span>{{/HanViet}}
                     </div>
+                    <!-- Chip labels are short lowercase English words (CHIP_LABELS in tests/test_extras.py). -->
                     <div class="amn-chips">
                         {{#Article}}<span class="amn-chip" data-amn-field="Article"><span class="amn-chip-label">article</span> {{Article}}</span>{{/Article}}
                         {{#Gender}}<span class="amn-chip amn-gender" data-amn-field="Gender" data-gender="{{text:Gender}}"><span class="amn-chip-label">gender</span> {{Gender}}</span>{{/Gender}}
@@ -153,6 +158,9 @@
 <script id="amn-lang">
   // Anki Miner Note: language tag. Order: a filled Language field (trimmed); else the first lang="…"
   // Anki Miner wrote inside the word or sentence; else a guess from the script of the text.
+  // Descendants inherit the root lang, so no template hardcodes a Japanese lang (test_no_hardcoded_japanese_lang).
+  // Copied in front.html and back.html; the two copies stay byte-identical, so edit both
+  // (test_lang_script_identical_in_both_templates). It runs on the front and again on the back: keep it idempotent.
   function amnInferLang(text) {
     const rules = [
       [/[\u3041-\u3096\u309d-\u309f\u30a1-\u30fa\u30fd-\u30ff]/, "ja"], // kana, without ・ and ー

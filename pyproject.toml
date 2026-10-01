@@ -1,6 +1,6 @@
 [project]
 name = "anki-miner-note"
-version = "0.1.0"
+version = "0.1.0"  # unused: the pushed v* tag is the release version
 description = "Multilingual Anki mining note type for Anki Miner, based on Lapis"
 requires-python = ">=3.11"
 license = "GPL-3.0-only"

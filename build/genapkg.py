@@ -15,7 +15,8 @@ from samples import SAMPLES, Sample, note_values
 BUILD_DIR = Path(__file__).resolve().parent
 SRC_DIR = BUILD_DIR.parent / "src"
 
-# Never change these: Anki matches note types by ID on import (Lapis is 1667218449922).
+# Never change these: Anki matches note types by ID on import. Never reuse Lapis's 1667218449922 either,
+# or an import merges into the user's Lapis.
 MODEL_ID = 1734918266473
 DECK_ID = 1734918266474
 MODEL_NAME = "Anki Miner Note"
