@@ -1208,21 +1208,26 @@ html.mobile .sentence, html:not(.mobile) .sentence-alt,
 }
 
 /* Regional CJK faces: the same Han codepoint is drawn differently in each region.
-   zh-Hant and yue come after zh, which also matches them. */
+   zh-Hant and yue come after zh, which also matches them. Vietnamese takes the Traditional faces for its
+   Han (HanViet, dictionary etymologies). :lang(zh-HK) does not match zh-Hant-HK, so the script-and-region
+   tags are listed too. */
 :lang(zh) {
   --cjk-serif: "Songti SC", "Noto Serif CJK SC", "Noto Serif SC", SimSun;
   --cjk-sans: "PingFang SC", "Noto Sans CJK SC", "Noto Sans SC", "Microsoft YaHei";
 }
 
 :lang(zh-Hant),
-:lang(zh-TW) {
+:lang(zh-TW),
+:lang(vi) {
   --cjk-serif: "Songti TC", "Noto Serif CJK TC", "Noto Serif TC", PMingLiU;
   --cjk-sans: "PingFang TC", "Noto Sans CJK TC", "Noto Sans TC", "Microsoft JhengHei";
 }
 
 :lang(yue),
 :lang(zh-HK),
-:lang(zh-MO) {
+:lang(zh-MO),
+:lang(zh-Hant-HK),
+:lang(zh-Hant-MO) {
   --cjk-serif: "Noto Serif CJK HK", "Noto Serif HK", "Songti TC";
   --cjk-sans: "PingFang HK", "Noto Sans CJK HK", "Noto Sans HK", "Microsoft JhengHei";
 }

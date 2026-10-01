@@ -13,7 +13,10 @@ REGION_SERIF = {
     "zh-Hant": "Noto Serif CJK TC",
     "zh-TW": "Noto Serif CJK TC",
     "yue": "Noto Serif CJK HK",
+    "zh-HK": "Noto Serif CJK HK",
     "zh-MO": "Noto Serif CJK HK",
+    "zh-Hant-HK": "Noto Serif CJK HK",
+    "zh-Hant-MO": "Noto Serif CJK HK",
     "ko": "Noto Serif CJK KR",
 }
 LAPIS_SERIF = [
@@ -76,6 +79,14 @@ def test_inner_lang_span_takes_its_region_fonts(open_card, name, inner_font):
     stack = families(open_card(SAMPLES_BY_NAME[name].fields).page, ".sentence span[lang]")
     assert inner_font in stack
     assert not ({"Noto Serif CJK SC", "Noto Serif CJK TC"} - {inner_font}) & set(stack), stack
+
+
+def test_vietnamese_card_draws_han_with_traditional_shapes(open_card):
+    """Han in a Vietnamese card (HanViet, glossary etymologies) takes the TC faces, not the Japanese default."""
+    page = open_card({"Language": "vi", "Expression": "xương", "MainDefinition": "from 骨"}).page
+    sans = families(page, ".main-def")
+    assert "Noto Sans CJK TC" in sans and "Noto Sans CJK JP" not in sans, sans
+    assert families(page, ".vocab")[0] == "Noto Serif"
 
 
 @pytest.mark.parametrize(
