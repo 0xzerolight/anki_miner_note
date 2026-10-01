@@ -7,7 +7,7 @@ Make sure you **don't forget** a _doublequote_ or a _semi-colon_ at the end of a
 
 # Settings breakdown
 
-All of these settings have a mobile counterpart, allowing you to setup different layouts per platform. If the one you want is not present in the file, you may have to add it yourself by prepending `mobile-` to its name.
+`main-picture-position`, `sentence-position` and `audio-buttons` have mobile counterparts (`--mobile-…`), so phones can use a different layout. The other settings apply to every platform.
 
 ### main-picture-position
 
@@ -77,7 +77,7 @@ Default value : `"full"`
 | `no-xref` | removes cross references to other entries (See also...) |
 | `no-img` | removes images |
 
-Therefore, having `--jitendex-foramt: "no-forms no-sentence no-xref";` will hide forms, examples sentences and cross references.
+Therefore, having `--jitendex-format: "no-forms no-sentence no-xref";` will hide forms, examples sentences and cross references.
 
 # Notable Settings
 

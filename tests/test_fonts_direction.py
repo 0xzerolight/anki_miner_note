@@ -25,6 +25,19 @@ LAPIS_SERIF = [
     "HanaMinB",
     "serif",
 ]
+LAPIS_SANS = [
+    "Inter",
+    "SF Pro Display",
+    "Liberation Sans",
+    "Segoe UI",
+    "Hiragino Kaku Gothic ProN",
+    "Noto Sans CJK JP",
+    "Noto Sans JP",
+    "Meiryo",
+    "HanaMinA",
+    "HanaMinB",
+    "sans-serif",
+]
 
 
 def computed(page, selector: str, prop: str) -> str:
@@ -51,6 +64,7 @@ def test_japanese_keeps_lapis_serif_stack(open_card):
     assert families(page, ".vocab") == LAPIS_SERIF
     sans = families(page, ".info")
     assert "Noto Sans CJK JP" in sans and not {"Noto Sans CJK SC", "Noto Sans CJK TC", "Noto Sans CJK KR"} & set(sans)
+    assert sans == LAPIS_SANS
 
 
 @pytest.mark.parametrize(

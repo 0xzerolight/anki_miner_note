@@ -25,7 +25,7 @@ Left empty, the card guesses the language from the word and sentence.
 
 ## Fonts
 
-The card uses fonts already on your device. To change them, edit these variables at the top of the note type's Styling: `--latin-serif`, `--latin-sans`, `--cjk-serif` and `--cjk-sans`. The stacks for Chinese, Cantonese, Korean, Arabic, Persian, Hebrew and Thai are in the LANGUAGES section at the end of the Styling.
+The card uses fonts already on your device. To change them, edit these variables at the top of the note type's Styling: `--latin-serif`, `--latin-sans`, `--cjk-serif` and `--cjk-sans`. Japanese cards keep Lapis's stacks, so only `--cjk-serif` and `--cjk-sans` change them. The stacks for Chinese, Cantonese, Korean, Arabic, Persian, Hebrew and Thai are in the LANGUAGES section at the end of the Styling.
 Lapis's other settings still apply; see [docs/user_settings.md](docs/user_settings.md).
 
 ## License
