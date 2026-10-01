@@ -265,3 +265,45 @@ def test_picture_stays_inside_its_box_on_desktop(open_card, sample):
         }"""
     )
     assert overflow <= 0.5
+
+
+# Number of line boxes the element's text occupies.
+LINES = """sel => {
+    const range = document.createRange();
+    range.selectNodeContents(document.querySelector(sel));
+    return new Set([...range.getClientRects()].filter((r) => r.width > 1).map((r) => Math.round(r.top))).size;
+}"""
+WIDTH = "sel => document.querySelector(sel).getBoundingClientRect().width"
+FITS = "document.documentElement.scrollWidth <= document.documentElement.clientWidth"
+
+
+# Extras make .dh-vocab taller, setDHHeight() makes the picture as tall, and so wider: that is when it splits.
+@pytest.mark.parametrize(
+    "fields,mobile",
+    [
+        ({"Expression": "καταπολεμούσαμε"}, False),
+        ({"Expression": "здравствуйте", "ExpressionReading": "здра́вствуйте", "PartOfSpeech": "interjection"}, False),
+        ({"Expression": "niebezpieczeństwo", "Gender": "n", "PartOfSpeech": "noun"}, False),
+        ({"Expression": "αλληλογραφία"}, True),
+    ],
+    ids=["el-desktop", "ru-desktop", "pl-desktop", "el-mobile"],
+)
+def test_back_headword_takes_room_from_the_picture_before_splitting(open_card, fields, mobile):
+    card = open_card({**fields, "Sentence": "x", "Picture": PICTURE}, mobile=mobile)
+    assert card.page.evaluate(LINES, ".vocab") == 1
+    assert card.page.evaluate(FITS)
+    assert card.errors == []
+
+
+@pytest.mark.parametrize("mobile", [False, True], ids=["desktop", "mobile"])
+def test_overlong_back_headword_keeps_the_picture_and_page_width(open_card, mobile):
+    fields = {"Expression": "Çekoslovakyalılaştıramadıklarımızdanmışsınız", "Sentence": "x", "Picture": PICTURE}
+    page = open_card(fields, mobile=mobile).page
+    assert page.evaluate(FITS)
+    assert page.evaluate(WIDTH, ".dh-image") >= 100
+
+
+def test_alt_picture_position_gives_the_headword_the_whole_row(open_card):
+    page = open_card({"Expression": "kedi", "Sentence": "x", "Picture": PICTURE}).page
+    page.evaluate("document.getElementById('lapis').setAttribute('data-main-picture-position', 'alt')")
+    assert page.evaluate(WIDTH, ".dh-vocab") == page.evaluate(WIDTH, ".def-header")

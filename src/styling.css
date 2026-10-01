@@ -1283,10 +1283,25 @@ html.mobile .sentence, html:not(.mobile) .sentence-alt,
 .front-vocab,
 .front-sentence,
 #hint,
-.vocab,
 .sentence,
 .sentence-alt {
   overflow-wrap: anywhere;
+}
+
+/* The back headword shares a row with the picture. break-word, unlike anywhere, keeps the whole word in
+   .dh-vocab's minimum width, so the picture shrinks before a word that fits is split; the max-width caps
+   make a longer word wrap instead of widening the card. Lapis's phone cap (60vw) still wins on mobile. */
+.vocab {
+  overflow-wrap: break-word;
+}
+
+.dh-vocab {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+:where(#lapis:not([data-main-picture-position="alt"])) .dh-vocab:has(~ .dh-image) {
+  max-width: 75%;
 }
 
 /*
