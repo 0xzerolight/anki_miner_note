@@ -1,4 +1,7 @@
-<div id="lapis" lang="ja">
+<div id="lapis" lang="{{text:Language}}">
+    <!-- Anki Miner Note: raw word, sentence and reading for the language fallback (see script#amn-lang).
+         Inert, and Anki's Browser columns strip script contents. -->
+    <script type="text/plain" id="amn-lang-source">{{Expression}} {{Sentence}} {{ExpressionFurigana}} {{ExpressionReading}}</script>
     <!---------- Header ------------->
     <header>
         <div class="top-container">
@@ -112,6 +115,44 @@
     <!------- Image modal --------->
     <div id="modal" class="tappable"></div>
 </div>
+
+<script id="amn-lang">
+  // Anki Miner Note: language tag. Order: a filled Language field (trimmed); else the first lang="…"
+  // Anki Miner wrote inside the word or sentence; else a guess from the script of the text.
+  function amnInferLang(text) {
+    const rules = [
+      [/[\u3041-\u3096\u309d-\u309f\u30a1-\u30fa\u30fd-\u30ff]/, "ja"], // kana, without ・ and ー
+      [/[\u1100-\u11ff\u3130-\u318f\uac00-\ud7af]/, "ko"],
+      [/[\u0e00-\u0e7f]/, "th"],
+      [/[\u0590-\u05ff]/, "he"],
+      [/[\u067e\u0686\u0698\u06a9\u06af\u06cc]/, "fa"],
+      [/[\u0600-\u06ff\u0750-\u077f]/, "ar"],
+      [/[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/, "zh"],
+    ];
+    for (const [pattern, lang] of rules) {
+      if (pattern.test(text)) return lang;
+    }
+    return "";
+  }
+
+  function amnFieldLang(html) {
+    const match = /\blang="([A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*)"/.exec(html);
+    return match ? match[1] : "";
+  }
+
+  (function amnSetLang() {
+    const root = document.getElementById("lapis");
+    if (!root) return;
+    const given = (root.getAttribute("lang") || "").trim();
+    if (given) {
+      root.setAttribute("lang", given);
+      return;
+    }
+    const source = document.getElementById("amn-lang-source");
+    const fields = source ? source.textContent : "";
+    root.setAttribute("lang", amnFieldLang(fields) || amnInferLang(fields));
+  })();
+</script>
 
 <!----------- Scripts ------------>
 <script>
