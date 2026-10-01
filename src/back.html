@@ -35,13 +35,45 @@
                 <div class="info">
                     <div class="pitch">
                         {{#ExpressionFurigana}}{{kana:ExpressionFurigana}}{{/ExpressionFurigana}}
-                        {{^ExpressionFurigana}}{{ExpressionReading}}{{/ExpressionFurigana}}
+                        {{^ExpressionFurigana}}{{^Pinyin}}{{^Jyutping}}{{ExpressionReading}}{{/Jyutping}}{{/Pinyin}}{{/ExpressionFurigana}}
                     </div>
 
                     <!-- Pitch Accent -->
                     <span id="pitch-tags" class="tags">{{PitchPosition}}</span>
                     <br />
                     <div class="audio-buttons"></div>
+                </div>
+
+                <!-- Anki Miner Note: per-language extras; each piece renders only when its field is filled -->
+                <div class="amn-extras">
+                    <div class="amn-readings">
+                        {{#Pinyin}}<span class="amn-reading" data-amn-field="Pinyin">{{Pinyin}}</span>{{/Pinyin}}
+                        {{#Jyutping}}<span class="amn-reading" data-amn-field="Jyutping">{{Jyutping}}</span>{{/Jyutping}}
+                        {{#Romanization}}<span class="amn-reading" data-amn-field="Romanization">{{Romanization}}</span>{{/Romanization}}
+                        {{#Transliteration}}<span class="amn-reading" data-amn-field="Transliteration">{{Transliteration}}</span>{{/Transliteration}}
+                    </div>
+                    <div class="amn-forms">
+                        {{#Traditional}}<span class="amn-form" data-amn-field="Traditional" lang="zh-Hant">{{Traditional}}</span>{{/Traditional}}
+                        {{#Hanja}}<span class="amn-form" data-amn-field="Hanja" lang="ko">{{Hanja}}</span>{{/Hanja}}
+                        {{#HanViet}}<span class="amn-form" data-amn-field="HanViet" lang="zh-Hant">{{HanViet}}</span>{{/HanViet}}
+                    </div>
+                    <div class="amn-chips">
+                        {{#Article}}<span class="amn-chip" data-amn-field="Article"><span class="amn-chip-label">article</span> {{Article}}</span>{{/Article}}
+                        {{#Gender}}<span class="amn-chip amn-gender" data-amn-field="Gender" data-gender="{{text:Gender}}"><span class="amn-chip-label">gender</span> {{Gender}}</span>{{/Gender}}
+                        {{#Plural}}<span class="amn-chip" data-amn-field="Plural"><span class="amn-chip-label">plural</span> {{Plural}}</span>{{/Plural}}
+                        {{#PartOfSpeech}}<span class="amn-chip" data-amn-field="PartOfSpeech"><span class="amn-chip-label">pos</span> {{PartOfSpeech}}</span>{{/PartOfSpeech}}
+                        {{#MeasureWord}}<span class="amn-chip" data-amn-field="MeasureWord"><span class="amn-chip-label">measure word</span> {{MeasureWord}}</span>{{/MeasureWord}}
+                        {{#Classifier}}<span class="amn-chip" data-amn-field="Classifier"><span class="amn-chip-label">classifier</span> {{Classifier}}</span>{{/Classifier}}
+                        {{#AspectPair}}<span class="amn-chip" data-amn-field="AspectPair"><span class="amn-chip-label">aspect pair</span> {{AspectPair}}</span>{{/AspectPair}}
+                        {{#Root}}<span class="amn-chip" data-amn-field="Root"><span class="amn-chip-label">root</span> {{Root}}</span>{{/Root}}
+                        {{#Binyan}}<span class="amn-chip" data-amn-field="Binyan"><span class="amn-chip-label">binyan</span> {{Binyan}}</span>{{/Binyan}}
+                        {{#PresentStem}}<span class="amn-chip" data-amn-field="PresentStem"><span class="amn-chip-label">present stem</span> {{PresentStem}}</span>{{/PresentStem}}
+                        {{#Colloquial}}<span class="amn-chip" data-amn-field="Colloquial"><span class="amn-chip-label">colloquial</span> {{Colloquial}}</span>{{/Colloquial}}
+                        {{#Formal}}<span class="amn-chip" data-amn-field="Formal"><span class="amn-chip-label">formal</span> {{Formal}}</span>{{/Formal}}
+                        {{#Affixes}}<span class="amn-chip" data-amn-field="Affixes"><span class="amn-chip-label">affixes</span> {{Affixes}}</span>{{/Affixes}}
+                        {{#Segmentation}}<span class="amn-chip" data-amn-field="Segmentation"><span class="amn-chip-label">segmentation</span> {{Segmentation}}</span>{{/Segmentation}}
+                        {{#Grammar}}<span class="amn-chip" data-amn-field="Grammar"><span class="amn-chip-label">grammar</span> {{Grammar}}</span>{{/Grammar}}
+                    </div>
                 </div>
             </div>
 
@@ -58,6 +90,7 @@
             {{#Picture}}<div class="image-alt tappable {{Tags}}">{{Picture}}</div>{{/Picture}}
             {{#SentenceFurigana}} {{furigana:SentenceFurigana}} {{/SentenceFurigana}}
             {{^SentenceFurigana}} {{furigana:Sentence}} {{/SentenceFurigana}}
+            {{#SentenceTranslation}}<div class="amn-translation" dir="auto">{{SentenceTranslation}}</div>{{/SentenceTranslation}}
             <div class="audio-buttons-alt"></div>
         </div>
 
@@ -85,6 +118,7 @@
             {{#Picture}}<div class="image-alt tappable {{Tags}}">{{Picture}}</div>{{/Picture}}
             {{#SentenceFurigana}} {{furigana:SentenceFurigana}} {{/SentenceFurigana}}
             {{^SentenceFurigana}} {{furigana:Sentence}} {{/SentenceFurigana}}
+            {{#SentenceTranslation}}<div class="amn-translation" dir="auto">{{SentenceTranslation}}</div>{{/SentenceTranslation}}
             <div class="audio-buttons-alt"></div>
         </div>
 

@@ -1256,3 +1256,104 @@ html.mobile .sentence, html:not(.mobile) .sentence-alt,
 .sentence-alt {
   overflow-wrap: anywhere;
 }
+
+/*
+ *  ANKI MINER NOTE: EXTRAS
+ */
+:root {
+  --light-mode-gender-masc: #1f6fd1;
+  --light-mode-gender-fem: #d02f5a;
+  --light-mode-gender-neut: #2f8f4e;
+  --light-mode-gender-common: #8a5cc2;
+  --dark-mode-gender-masc: #6aa8ff;
+  --dark-mode-gender-fem: #ff7b9c;
+  --dark-mode-gender-neut: #6fd08f;
+  --dark-mode-gender-common: #c3a2f2;
+}
+
+.card.nightMode {
+  --gender-masc: var(--dark-mode-gender-masc);
+  --gender-fem: var(--dark-mode-gender-fem);
+  --gender-neut: var(--dark-mode-gender-neut);
+  --gender-common: var(--dark-mode-gender-common);
+}
+
+.card:not(.nightMode) {
+  --gender-masc: var(--light-mode-gender-masc);
+  --gender-fem: var(--light-mode-gender-fem);
+  --gender-neut: var(--light-mode-gender-neut);
+  --gender-common: var(--light-mode-gender-common);
+}
+
+/* Empty rows have no children, no padding and no margin, so they take no space. */
+.amn-extras {
+  font-family: var(--font-sans);
+  font-size: var(--info-font-size);
+  overflow-wrap: anywhere;
+}
+
+.amn-readings,
+.amn-forms,
+.amn-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 0.6em;
+}
+
+.amn-reading,
+.amn-form,
+.amn-chip {
+  margin-top: 0.3em;
+}
+
+.amn-form {
+  font-family: var(--font-serif);
+  font-size: 1.2em;
+}
+
+.amn-chip {
+  border: 1px solid var(--fg-subtle);
+  border-radius: 5px;
+  padding: 0 0.4em;
+  line-height: 1.6;
+}
+
+.amn-chip-label {
+  color: var(--fg-subtle);
+  font-size: 0.75em;
+}
+
+/* Gender: Anki Miner writes a language's own label (der/die/das, le/la, м./ж./с., …). */
+.amn-gender:is([data-gender="masculine" i], [data-gender="der" i], [data-gender="le" i], [data-gender="el" i],
+  [data-gender="o" i], [data-gender="m" i], [data-gender="m pers" i], [data-gender="m anim" i],
+  [data-gender="m inan" i], [data-gender="ο"], [data-gender="м."], [data-gender="ч."], [data-gender="ז׳"]) {
+  --gender: var(--gender-masc);
+}
+
+/* German "die" also marks plural-only nouns; it takes the feminine colour. */
+.amn-gender:is([data-gender="feminine" i], [data-gender="die" i], [data-gender="la" i], [data-gender="a" i],
+  [data-gender="f" i], [data-gender="η"], [data-gender="ж."], [data-gender="נ׳"]) {
+  --gender: var(--gender-fem);
+}
+
+.amn-gender:is([data-gender="neuter" i], [data-gender="das" i], [data-gender="n" i], [data-gender="το"],
+  [data-gender="с."]) {
+  --gender: var(--gender-neut);
+}
+
+.amn-gender[data-gender="common" i] {
+  --gender: var(--gender-common);
+}
+
+.amn-gender {
+  color: var(--gender, var(--fg-color));
+  border-color: var(--gender, var(--fg-subtle));
+}
+
+.amn-translation {
+  font-family: var(--font-sans);
+  font-size: var(--info-font-size);
+  color: var(--fg-subtle);
+  margin-top: 0.2em;
+}

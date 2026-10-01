@@ -86,3 +86,14 @@ def test_template_references_exist():
 def test_package_builds(tmp_path):
     output = genapkg.build_package(tmp_path / "anki-miner-note.apkg")
     assert output.stat().st_size > 0
+
+
+def test_extras_only_inside_their_own_section():
+    """An extra is referenced only inside {{#Extra}}…{{/Extra}}, so an empty field leaves no markup."""
+    back = template_text("back.html")
+    for name in EXTRAS:
+        outside = re.sub(r"\{\{#" + name + r"\}\}.*?\{\{/" + name + r"\}\}", "", back, flags=re.S)
+        stray = [
+            body for prefix, body in TEMPLATE_REF.findall(outside) if not prefix and body.split(":")[-1].strip() == name
+        ]
+        assert not stray, f"{name} is referenced outside its own section: {stray}"
