@@ -109,6 +109,23 @@ def test_rtl_blocks(open_card, name):
     assert computed(front, ".front-sentence", "direction") == "rtl"
 
 
+@pytest.mark.parametrize("lang,word,reading", [("he", "ספר", "סֵפֶר"), ("ar", "قلم", "قَلَم")])
+def test_rtl_reading_does_not_flip_the_card_inside_dir_auto(open_card, lang, word, reading):
+    """AnkiDroid wraps every card in <div id="content" dir="auto">; a raw RTL reading must not flip the card."""
+    fields = {
+        "Expression": f'<div dir="rtl" lang="{lang}">{word}</div>',
+        "ExpressionReading": reading,
+        "Sentence": f'<div dir="rtl" lang="{lang}">{word} {word}.</div>',
+        "Glossary": "book. a writing.",
+        "PartOfSpeech": "noun",
+    }
+    page = open_card(fields, mobile=True).page
+    page.evaluate("document.getElementById('qa').setAttribute('dir', 'auto')")
+    for selector in (".def-header", ".amn-chips", ".main-def"):
+        assert computed(page, selector, "direction") == "ltr", selector
+    assert computed(page, ".vocab", "direction") == "rtl"
+
+
 def test_hint_follows_its_own_text(open_card):
     fields = {**SAMPLES_BY_NAME["he"].fields, "Hint": "Think of a library."}
     assert computed(open_card(fields, side="front").page, "#hint", "direction") == "ltr"

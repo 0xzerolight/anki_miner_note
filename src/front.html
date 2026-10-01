@@ -1,8 +1,11 @@
-<div id="lapis" lang="{{text:Language}}">
-    <!-- Anki Miner Note: raw word, sentence and reading for the language fallback (see script#amn-lang).
+<div id="lapis" dir="ltr" lang="{{text:Language}}">
+    <!-- Anki Miner Note: dir="ltr" keeps the layout left-to-right inside AnkiDroid's <div dir="auto">; the word
+         and sentence blocks set their own direction (styling.css, LANGUAGES).
+         Raw word and readings, and apart from them the sentence, for the language fallback (see script#amn-lang).
          The readings still tag a Japanese card ja when its sentence has no kana.
          Inert, and Anki's Browser columns strip script contents. -->
-    <script type="text/plain" id="amn-lang-source">{{Expression}} {{Sentence}} {{ExpressionFurigana}} {{ExpressionReading}}</script>
+    <script type="text/plain" id="amn-lang-source">{{Expression}} {{ExpressionFurigana}} {{ExpressionReading}}</script>
+    <script type="text/plain" id="amn-lang-sentence">{{Sentence}}</script>
     <!---------- Header ------------->
     <header style="visibility: hidden"></header>
 
@@ -55,7 +58,8 @@
 
 <script id="amn-lang">
   // Anki Miner Note: language tag. Order: a filled Language field (trimmed); else the first lang="…"
-  // Anki Miner wrote inside the word or sentence; else a guess from the script of the text.
+  // Anki Miner wrote inside the word or sentence; else a guess from the script of the text, made only when
+  // the word fields are in a script with a rule.
   // Descendants inherit the root lang, so no template hardcodes a Japanese lang (test_no_hardcoded_japanese_lang).
   // Copied in front.html and back.html; the two copies stay byte-identical, so edit both
   // (test_lang_script_identical_in_both_templates). It runs on the front and again on the back: keep it idempotent.
@@ -88,9 +92,11 @@
       root.setAttribute("lang", given);
       return;
     }
-    const source = document.getElementById("amn-lang-source");
-    const fields = source ? source.textContent : "";
-    root.setAttribute("lang", amnFieldLang(fields) || amnInferLang(fields));
+    const read = (id) => document.getElementById(id)?.textContent || "";
+    const word = read("amn-lang-source");
+    const fields = word + " " + read("amn-lang-sentence");
+    // A Latin, Cyrillic or Greek headword leaves the card untagged, even when its sentence quotes 東京 or حبيبي.
+    root.setAttribute("lang", amnFieldLang(fields) || (amnInferLang(word) && amnInferLang(fields)));
   })();
 </script>
 

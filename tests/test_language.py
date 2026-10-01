@@ -79,3 +79,34 @@ def test_anki_miner_inner_lang_survives(open_card):
     assert page.locator('#lapis span[lang="zh-Hant"]').count() >= 1
     page = open_card(SAMPLES_BY_NAME["ar"].fields).page
     assert page.locator('#lapis div[dir="rtl"][lang="ar"]').count() >= 1
+
+
+@pytest.mark.render
+@pytest.mark.parametrize(
+    "sentence",
+    [
+        "The <b>dog</b> is called حبيبي, my friend.",
+        "Sushi (寿司) is what the <b>dog</b> ate.",
+        "Der <b>Hund</b> heißt שלום.",
+    ],
+    ids=["arabic", "han", "hebrew"],
+)
+def test_latin_headword_keeps_the_card_untagged(open_card, sentence):
+    page = open_card({"Expression": "dog", "Sentence": sentence}).page
+    assert page.get_attribute("#lapis", "lang") == ""
+    assert page.eval_on_selector(".sentence", "e => getComputedStyle(e).direction") == "ltr"
+
+
+@pytest.mark.render
+@pytest.mark.parametrize(
+    "fields,expected",
+    [
+        ({"Expression": "映画", "Sentence": "昨日映画を見ました。"}, "ja"),
+        ({"Expression": "學校", "Sentence": "나는 學校에 간다."}, "ko"),
+        ({"Expression": "сло́во", "Sentence": "Это <b>слово</b> — سلام."}, ""),
+    ],
+    ids=["ja-kanji-word", "ko-hanja-word", "ru-with-arabic"],
+)
+def test_word_fields_gate_the_guess(open_card, fields, expected):
+    for side in ("front", "back"):
+        assert open_card(fields, side=side).page.get_attribute("#lapis", "lang") == expected
