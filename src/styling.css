@@ -1207,6 +1207,12 @@ html.mobile .sentence, html:not(.mobile) .sentence-alt,
   --font-sans: var(--script-sans), var(--latin-sans), sans-serif;
 }
 
+/* Turkish tells i from ı, and Noto Serif's fi ligature drops the dot (fi reads as fı). Anki Miner leaves
+   Turkish cards untagged, so common ligatures are off everywhere except Arabic script, whose fonts use them. */
+#lapis:not(:lang(ar), :lang(fa)) {
+  font-variant-ligatures: no-common-ligatures;
+}
+
 /* Regional CJK faces: the same Han codepoint is drawn differently in each region.
    zh-Hant and yue come after zh, which also matches them. Vietnamese takes the Traditional faces for its
    Han (HanViet, dictionary etymologies). :lang(zh-HK) does not match zh-Hant-HK, so the script-and-region
@@ -1250,9 +1256,20 @@ html.mobile .sentence, html:not(.mobile) .sentence-alt,
   unicode-bidi: isolate;
 }
 
+/* Anki Miner marks right-to-left dictionary examples unicode-bidi: plaintext; align each from its own start edge. */
+.definition [data-sc-content="example-sentence-a"] {
+  text-align: start;
+}
+
 /* Thai stacks vowels and tone marks above and below the line. */
 :is(.front-vocab, .front-sentence, #hint, .vocab, .sentence, .sentence-alt):lang(th) {
   line-height: 1.8;
+}
+
+/* Korean wraps between words (eojeol), not between the syllables of one word. An overlong word still
+   breaks, through the overflow-wrap rules below. */
+:is(.front-vocab, .front-sentence, #hint, .vocab, .sentence, .sentence-alt):lang(ko) {
+  word-break: keep-all;
 }
 
 /* Extras and wrapped headwords make .dh-vocab taller, and Lapis's setDHHeight() sizes the picture to

@@ -154,6 +154,96 @@ def test_thai_gets_taller_lines(open_card):
     assert ratio >= 1.75
 
 
+def ligatures(page, selector: str) -> str:
+    return computed(page, selector, "fontVariantLigatures")
+
+
+def test_turkish_card_turns_off_the_fi_ligature(open_card):
+    """Noto Serif's fi ligature drops the i's dot, so "fi" reads as "fı"; Anki Miner leaves Turkish untagged."""
+    fields = {"Expression": "fiyat", "Sentence": "Fıstığın fiyatı arttı."}
+    assert ligatures(open_card(fields, side="front").page, ".front-vocab") == "no-common-ligatures"
+    front = open_card(fields, card_type="IsSentenceCard", side="front").page
+    assert ligatures(front, ".front-sentence") == "no-common-ligatures"
+    back = open_card(fields).page
+    assert ligatures(back, ".vocab") == "no-common-ligatures"
+    assert ligatures(back, ".sentence") == "no-common-ligatures"
+
+
+def test_arabic_keeps_its_optional_ligatures(open_card):
+    page = open_card({"Expression": '<div dir="rtl" lang="ar">الله</div>', "Sentence": "x"}, side="front").page
+    assert ligatures(page, ".front-vocab div") == "normal"
+
+
+KO_LONG = {
+    "Expression": "국립중앙박물관",
+    "Sentence": (
+        "어제저녁에 우리 할머니께서 끓여주신 된장찌개를 먹고 나서 "
+        "<b>국립중앙박물관</b>에서 열리는 특별전시회를 보러 "
+        "서둘러 지하철을 탔습니다."
+    ),
+}
+# Pairs of Hangul syllables that a line break separates, i.e. breaks inside a word.
+HANGUL_SPLITS = """sel => {
+    const chars = [];
+    const walker = document.createTreeWalker(document.querySelector(sel), NodeFilter.SHOW_TEXT);
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        for (let i = 0; i < node.data.length; i++) {
+            const range = document.createRange();
+            range.setStart(node, i);
+            range.setEnd(node, i + 1);
+            const rect = range.getClientRects()[0];
+            if (rect) chars.push([node.data[i], rect.top]);
+        }
+    }
+    const hangul = /[\\uac00-\\ud7af]/;
+    const splits = [];
+    for (let i = 1; i < chars.length; i++) {
+        const [before, beforeTop] = chars[i - 1];
+        const [after, afterTop] = chars[i];
+        if (afterTop > beforeTop + 5 && hangul.test(before) && hangul.test(after)) splits.push(before + "|" + after);
+    }
+    return splits;
+}"""
+
+
+def test_korean_wraps_between_words(open_card):
+    front = open_card(KO_LONG, card_type="IsSentenceCard", side="front", mobile=True).page
+    assert computed(front, ".front-sentence", "wordBreak") == "keep-all"
+    assert front.evaluate(HANGUL_SPLITS, ".front-sentence") == []
+    back = open_card(KO_LONG, mobile=True).page
+    assert back.evaluate(HANGUL_SPLITS, ".sentence-alt") == []
+    assert back.evaluate("document.documentElement.scrollWidth <= document.documentElement.clientWidth")
+
+
+def test_keep_all_is_korean_only(open_card):
+    fields = {"Expression": "骨", "Sentence": "我们<b>骨</b>头很硬。"}
+    page = open_card(fields, card_type="IsSentenceCard", side="front").page
+    assert computed(page, ".front-sentence", "wordBreak") == "normal"
+
+
+def test_wrapped_rtl_glossary_example_aligns_to_its_start_edge(open_card):
+    """Anki Miner marks RTL examples unicode-bidi: plaintext; Lapis's .main-def text-align: left left them ragged."""
+    example = "دیروز بعد از ظهر با دوستانم به کتابخانهٔ بزرگ شهر رفتیم و چند ساعت آنجا درس خواندیم. " * 2
+    glossary = (
+        '<div class="yomitan-glossary"><ol data-count="1"><li data-dictionary="wty-fa-en">'
+        f'<div data-sc-content="example-sentence-a">{example}</div></li></ol></div>'
+        '<style>.yomitan-glossary ol[data-count] [data-sc-content="example-sentence-a"]'
+        "{unicode-bidi:plaintext}</style>"
+    )
+    fields = {
+        "Expression": '<div dir="rtl" lang="fa">کتابخانه</div>',
+        "Sentence": '<div dir="rtl" lang="fa">به کتابخانه رفتیم.</div>',
+        "Glossary": glossary,
+    }
+    page = open_card(fields, mobile=True).page
+    rights = page.eval_on_selector(
+        '[data-sc-content="example-sentence-a"]',
+        "e => { const r = document.createRange(); r.selectNodeContents(e);"
+        " return [...r.getClientRects()].map(q => Math.round(q.right)); }",
+    )
+    assert len(rights) > 1 and max(rights) - min(rights) <= 2, rights
+
+
 @pytest.mark.parametrize("sample", SAMPLES, ids=lambda s: s.name)
 @pytest.mark.parametrize("card_type", CARD_TYPES, ids=lambda c: c or "word")
 @pytest.mark.parametrize("side", ["front", "back"])
