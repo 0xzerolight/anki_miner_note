@@ -16,7 +16,7 @@ Based on [Lapis](https://github.com/donkuri/lapis) by donkuri and contributors.
 
 ## Update
 
-Import the new `.apkg` with **Merge note types** ticked. Your notes and their fields are kept.
+Import the new `.apkg` with **Merge note types** ticked and **Update note types** set to **Always**. Your notes and their fields are kept. Edits you made to the Styling are replaced, so copy them first and re-apply them after.
 
 ## Language
 

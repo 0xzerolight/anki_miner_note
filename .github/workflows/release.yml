@@ -20,4 +20,4 @@ jobs:
           draft: true
           files: dist/Anki-Miner-Note-${{ github.ref_name }}.apkg
           body: |
-            Import into Anki 23.10 or later. When updating, tick "Merge note types" in the import dialog.
+            Import into Anki 23.10 or later. When updating, tick "Merge note types" and set "Update note types" to "Always" in the import dialog; re-apply any Styling edits afterwards.
