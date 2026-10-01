@@ -1,0 +1,36 @@
+[project]
+name = "anki-miner-note"
+version = "0.1.0"
+description = "Multilingual Anki mining note type for Anki Miner, based on Lapis"
+requires-python = ">=3.11"
+license = "GPL-3.0-only"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "genanki==0.13.1",
+    "pyyaml==6.0.3",
+    "anki==26.9.3",
+    "playwright==1.63.0",
+    "pytest==9.1.1",
+    "ruff==0.16.9",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+pythonpath = ["build", "tests"]
+testpaths = ["tests"]
+markers = ["render: renders cards in Chromium (slower)"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+extend-exclude = ["docs"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["cards", "genapkg", "samples"]

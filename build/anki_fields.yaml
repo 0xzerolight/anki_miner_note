@@ -1,51 +1,80 @@
+# Field order is a contract: append new fields at the end, never rename, remove or reorder.
+# build/fields.lock pins the shipped list.
+# Lapis core (names byte-exact, so Lapis presets and Yomitan setups keep working)
 - name: Expression
-  font: Hiragino Sans Pr6N
   size: 50
 - name: ExpressionFurigana
-  font: Hiragino Sans Pr6N
 - name: ExpressionReading
-  font: Hiragino Sans Pr6N
 - name: ExpressionAudio
-  font: Hiragino Sans Pr6N
   size: 10
 - name: SelectionText
-  font: Hiragino Sans Pr6N
 - name: MainDefinition
-  font: Hiragino Sans Pr6N
 - name: DefinitionPicture
-  font: Hiragino Sans Pr6N
   size: 15
 - name: Sentence
-  font: Hiragino Sans Pr6N
   size: 20
 - name: SentenceFurigana
-  font: Hiragino Sans Pr6N
   size: 20
 - name: SentenceAudio
-  font: Hiragino Sans Pr6N
   size: 10
 - name: Picture
-  font: Hiragino Sans Pr6N
 - name: Glossary
-  font: Hiragino Sans Pr6N
 - name: Hint
-  font: Hiragino Sans Pr6N
 - name: IsWordAndSentenceCard
-  font: Hiragino Sans Pr6N
 - name: IsClickCard
-  font: Hiragino Sans Pr6N
 - name: IsSentenceCard
-  font: Hiragino Sans Pr6N
 - name: IsAudioCard
-  font: Hiragino Sans Pr6N
 - name: PitchPosition
-  font: Hiragino Sans Pr6N
 - name: PitchCategories
-  font: Hiragino Sans Pr6N
 - name: Frequency
-  font: Hiragino Sans Pr6N
 - name: FreqSort
-  font: Hiragino Sans Pr6N
 - name: MiscInfo
-  font: Hiragino Sans Pr6N
   size: 15
+# Added core
+- name: SentenceTranslation
+- name: Language
+# Per-language extras, named after Anki Miner's CardFieldSpec placeholders
+- name: Pinyin
+  collapsed: true
+- name: Jyutping
+  collapsed: true
+- name: Traditional
+  collapsed: true
+- name: MeasureWord
+  collapsed: true
+- name: Hanja
+  collapsed: true
+- name: HanViet
+  collapsed: true
+- name: Gender
+  collapsed: true
+- name: Article
+  collapsed: true
+- name: Plural
+  collapsed: true
+- name: PartOfSpeech
+  collapsed: true
+- name: AspectPair
+  collapsed: true
+- name: Root
+  collapsed: true
+- name: Binyan
+  collapsed: true
+- name: Transliteration
+  collapsed: true
+- name: Romanization
+  collapsed: true
+- name: Colloquial
+  collapsed: true
+- name: PresentStem
+  collapsed: true
+- name: Classifier
+  collapsed: true
+- name: Affixes
+  collapsed: true
+- name: Formal
+  collapsed: true
+- name: Grammar
+  collapsed: true
+- name: Segmentation
+  collapsed: true
