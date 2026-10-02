@@ -301,23 +301,22 @@ def test_back_headword_takes_room_from_the_picture_before_splitting(open_card, f
     assert card.errors == []
 
 
-# Lapis's 60vw phone cap alone leaves a 320 px phone 86 px of picture beside a word that splits anyway.
-@pytest.mark.parametrize(
-    "word,mobile,width",
-    [
-        ("Çekoslovakyalılaştıramadıklarımızdanmışsınız", False, None),
-        ("Çekoslovakyalılaştıramadıklarımızdanmışsınız", True, None),
-        ("Çekoslovakyalılaştıramadıklarımızdanmışsınız", True, 320),
-        ("egészségügyi", True, 320),
-    ],
-    ids=["desktop", "mobile", "narrow", "narrow-hu"],
-)
-def test_overlong_back_headword_keeps_the_picture_and_page_width(open_card, word, mobile, width):
-    fields = {"Expression": word, "Sentence": "x", "Picture": PICTURE}
-    page = open_card(fields, mobile=mobile, width=width).page
+@pytest.mark.parametrize("mobile", [False, True], ids=["desktop", "mobile"])
+def test_overlong_back_headword_keeps_the_picture_and_page_width(open_card, mobile):
+    fields = {"Expression": "Çekoslovakyalılaştıramadıklarımızdanmışsınız", "Sentence": "x", "Picture": PICTURE}
+    page = open_card(fields, mobile=mobile).page
     assert page.evaluate(FITS)
     assert page.eval_on_selector(".def-header", "e => e.scrollWidth <= e.clientWidth")
     assert page.evaluate(WIDTH, ".dh-image img") >= 99.5
+
+
+# On a 320 px phone the picture gives up room (Lapis's 60vw cap) before an everyday word splits.
+@pytest.mark.parametrize("word", ["Arbeitsplatz", "universidad", "öğretmenler", "ประวัติศาสตร์"])
+def test_narrow_phone_keeps_a_common_back_headword_whole(open_card, word):
+    page = open_card({"Expression": word, "Sentence": "x", "Picture": PICTURE}, mobile=True, width=320).page
+    assert page.evaluate(LINES, ".vocab") == 1
+    assert page.evaluate(FITS)
+    assert page.eval_on_selector(".def-header", "e => e.scrollWidth <= e.clientWidth")
 
 
 def test_alt_picture_position_gives_the_headword_the_whole_row(open_card):
