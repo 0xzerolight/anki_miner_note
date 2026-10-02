@@ -40,11 +40,13 @@ def test_blank_click_toggle_leaves_the_front_script_working(open_card, blank):
     assert card.page.inner_text("#audio b") == "[...]"
 
 
-def test_copy_shortcut_does_not_flip_the_click_card(open_card):
+# Cmd+C on macOS reaches the page as Meta+c.
+@pytest.mark.parametrize("shortcut", ["Control+c", "Meta+c", "Alt+c"])
+def test_copy_shortcut_does_not_flip_the_click_card(open_card, shortcut):
     fields = {"Expression": "Hund", "Sentence": "Die Hunde bellen."}
     page = open_card(fields, card_type="IsClickCard", side="front").page
     page.click("#click")
-    page.keyboard.press("Control+c")
+    page.keyboard.press(shortcut)
     assert page.locator("#click .front-sentence").count() == 1
     page.keyboard.press("c")
     assert page.locator("#click .front-vocab").count() == 1
