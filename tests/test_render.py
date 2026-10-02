@@ -163,6 +163,18 @@ def test_hidden_main_dictionary_leaves_no_stray_separator(open_card, main):
     assert card.errors == []
 
 
+def test_hidden_glossary_wrapper_keeps_the_style_the_primary_uses(open_card):
+    """A <style> inside a hidden dictionary's wrapper still styles the Definition, so the cleanup keeps it."""
+    style = '<style>.yomitan-glossary [data-dictionary="Jitendex"] .probe{color: rgb(1, 2, 3)}</style>'
+    glossary = yomitan_single_glossary("Jitendex", "cat", style) + envelope("JMdict", "cat")
+    fields = {"Expression": "猫", "MainDefinition": yomitan_single_glossary("Jitendex", "cat"), "Glossary": glossary}
+    card = open_card(fields)
+    assert card.page.locator("#glossaries").count() == 1
+    probe = '#primary [data-dictionary="Jitendex"] .probe'
+    assert card.page.eval_on_selector(probe, "e => getComputedStyle(e).color") == "rgb(1, 2, 3)"
+    assert card.errors == []
+
+
 def test_hand_written_glossary_survives_the_hidden_dictionary_cleanup(open_card):
     hand_written = '<div class="yomitan-glossary"><ol><li>my own note</li></ol></div>'
     glossary = hand_written + envelope("Jitendex", "to eat") + envelope("JMdict", "to eat") + STACKED_STYLE
