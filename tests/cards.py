@@ -46,7 +46,10 @@ def render_note(col: Collection, fields: Mapping[str, str], card_type: str | Non
     """Add a note with these fields (plus the card-type toggle) and return its rendered sides, CSS included."""
     note = col.new_note(col.models.by_name(genapkg.MODEL_NAME))
     for name, value in fields.items():
-        note[name] = value
+        if name == "Tags":  # Anki's special field: the note's space-separated tags
+            note.tags = value.split()
+        else:
+            note[name] = value
     if card_type is not None:
         note[card_type] = "x"
     col.add_note(note, col.decks.id("Render tests"))

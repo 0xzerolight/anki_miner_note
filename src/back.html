@@ -329,8 +329,14 @@
     function splitTags() {
         const tagsContainer = document.querySelector(".tags-container");
         if (!tagsContainer) return;
-        const tags = `{{Tags}}`.split(" ");
-        tagsContainer.innerHTML = tags.map(tag =>`<div class="tags">${tag}</div>`).join('');
+        // Read the tags Anki rendered: pasted into this script, a tag holding ` ${ or a trailing \ ends it.
+        const tags = tagsContainer.textContent.trim().split(/\s+/);
+        tagsContainer.replaceChildren(...tags.map((tag) => {
+            const box = document.createElement("div");
+            box.className = "tags";
+            box.textContent = tag;
+            return box;
+        }));
     }
 
     // Useful to determine morae count
@@ -616,6 +622,16 @@
 
         let defContainer = document.querySelector(".main-def");
         defContainer.appendChild(style);
+
+        // Anki Miner's style tail draws a rule above each stacked .yomitan-glossary, and a wrapper whose
+        // dictionaries are all hidden still counts as the sibling: drop it. A wrapper naming no dictionary
+        // (a hand-written list) or holding Yomitan's scoped <style> stays, as in movePrimaryDicts.
+        const hidden = new Set(Array.from(primaryDicts, (dict) => dict.dataset.dictionary));
+        document.querySelectorAll("#glossaries .yomitan-glossary").forEach((wrapper) => {
+            const dicts = Array.from(wrapper.querySelectorAll("li[data-dictionary]"));
+            if (dicts.length === 0 || wrapper.querySelector("style")) return;
+            if (dicts.every((dict) => hidden.has(dict.dataset.dictionary))) wrapper.remove();
+        });
     }
 
     // Fixes list numbering when using multiple primary dicts

@@ -54,6 +54,20 @@ def test_trailing_ascii_backslash_downstep_keeps_the_back_script(open_card):
     assert card.page.inner_text("#pitch-tags li") == "2"
 
 
+def test_tag_text_cannot_break_the_back_script(open_card):
+    """Anki stores tags as typed and {{Tags}} renders them raw, so ` ${ and a trailing \\ reach the page."""
+    fields = {
+        "Expression": "橋",
+        "ExpressionReading": "はし",
+        "PitchPosition": "2",
+        "Tags": "don`t ${x} trail\\ a&amp;b",
+    }
+    card = open_card(fields)
+    assert card.errors == []
+    assert card.page.locator(".tags-container .tags").all_inner_texts() == ["${x}", "a&b", "don`t", "trail\\"]
+    assert card.page.inner_text("#pitch-tags li") == "2"
+
+
 def envelope(title: str, gloss: str) -> str:
     """One dictionary's hit, in the Yomitan envelope Anki Miner writes into MainDefinition and Glossary."""
     return (
@@ -129,6 +143,31 @@ def test_second_primary_dictionary_keeps_its_yomitan_styles(open_card):
     assert page.locator("#primary li[data-dictionary]").count() == 2
     colour = page.eval_on_selector('[data-dictionary="Jitendex"] .probe', "e => getComputedStyle(e).color")
     assert colour == "rgb(1, 2, 3)"
+
+
+# Separators a reader sees on the Glossaries page: the top border of each list that takes up height.
+GLOSSARY_SEPARATORS = """() => [...document.querySelectorAll("#glossaries ol[data-count]")]
+    .filter((ol) => ol.offsetHeight > 0)
+    .map((ol) => getComputedStyle(ol).borderTopWidth)"""
+
+
+@pytest.mark.parametrize("main", ["Jitendex", "JMdict", "KANJIDIC"], ids=["first", "middle", "last"])
+def test_hidden_main_dictionary_leaves_no_stray_separator(open_card, main):
+    """Anki Miner's sibling rule still matches a wrapper whose dictionary hideCorrectDefinition hid."""
+    stacked = envelope("Jitendex", "to eat") + envelope("JMdict", "to eat; to live on") + envelope("KANJIDIC", "eat")
+    fields = {"Expression": "食べる", "MainDefinition": envelope(main, "to eat"), "Glossary": stacked + STACKED_STYLE}
+    card = open_card(fields)
+    card.page.keyboard.press("ArrowRight")
+    assert card.page.inner_text(".def-info").startswith("Glossaries")
+    assert card.page.evaluate(GLOSSARY_SEPARATORS) == ["0px", "1px"]
+    assert card.errors == []
+
+
+def test_hand_written_glossary_survives_the_hidden_dictionary_cleanup(open_card):
+    hand_written = '<div class="yomitan-glossary"><ol><li>my own note</li></ol></div>'
+    glossary = hand_written + envelope("Jitendex", "to eat") + envelope("JMdict", "to eat") + STACKED_STYLE
+    fields = {"Expression": "食べる", "MainDefinition": envelope("Jitendex", "to eat"), "Glossary": glossary}
+    assert "my own note" in open_card(fields).page.inner_text("#glossaries")
 
 
 JITENDEX = (
