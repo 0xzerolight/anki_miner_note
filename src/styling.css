@@ -1208,8 +1208,9 @@ html.mobile .sentence, html:not(.mobile) .sentence-alt,
 }
 
 /* Turkish tells i from ı, and Noto Serif's fi ligature drops the dot (fi reads as fı). Anki Miner leaves
-   Turkish cards untagged, so common ligatures are off everywhere except Arabic script, whose fonts use them. */
-#lapis:not(:lang(ar), :lang(fa)) {
+   Turkish cards untagged, so common ligatures are off everywhere except Arabic script and Thai, whose fonts
+   use them (Noto Thai joins ฤๅ and ฦๅ). */
+#lapis:not(:lang(ar), :lang(fa), :lang(th)) {
   font-variant-ligatures: no-common-ligatures;
 }
 
@@ -1290,7 +1291,8 @@ html.mobile .sentence, html:not(.mobile) .sentence-alt,
 
 /* The back headword shares a row with the picture. break-word, unlike anywhere, keeps the whole word in
    .dh-vocab's minimum width, so the picture shrinks before a word that fits is split; the max-width caps
-   make a longer word wrap instead of widening the card. Lapis's phone cap (60vw) still wins on mobile. */
+   make a longer word wrap instead of widening the card. Lapis's phone cap (60vw) still wins on mobile,
+   lowered on phones narrower than about 360 px by the rule after these. */
 .vocab {
   overflow-wrap: break-word;
 }
@@ -1302,6 +1304,12 @@ html.mobile .sentence, html:not(.mobile) .sentence-alt,
 
 :where(#lapis:not([data-main-picture-position="alt"])) .dh-vocab:has(~ .dh-image) {
   max-width: 75%;
+}
+
+/* The picture keeps 100 px beside a word that splits anyway: 60vw alone leaves it 86 px at 320 px. The
+   last term is .def-header's gap. Same specificity as Lapis's .mobile rule and later, so it wins. */
+.mobile :where(#lapis:not([data-main-picture-position="alt"])) .dh-vocab:has(~ .dh-image) {
+  max-width: min(60vw, calc(100% - 100px - min(20px, 2vw)));
 }
 
 /*

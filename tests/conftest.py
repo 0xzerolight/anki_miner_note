@@ -43,9 +43,11 @@ def open_card(browser, collection) -> Iterator[OpenCard]:
         side: str = "back",
         mobile: bool = False,
         night: bool = False,
+        width: int | None = None,
     ) -> CardPage:
         rendered = render_note(collection, fields, card_type)
-        page = browser.new_page(viewport={"width": 390 if mobile else 1280, "height": 900})
+        # Set before the content loads: Lapis's setDHHeight() sizes the picture once, at load.
+        page = browser.new_page(viewport={"width": width or (390 if mobile else 1280), "height": 900})
         card = CardPage(page)
         page.on("pageerror", lambda exc: card.errors.append(str(exc)))
         page.on(

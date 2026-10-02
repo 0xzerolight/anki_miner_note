@@ -169,9 +169,15 @@ def test_turkish_card_turns_off_the_fi_ligature(open_card):
     assert ligatures(back, ".sentence") == "no-common-ligatures"
 
 
-def test_arabic_keeps_its_optional_ligatures(open_card):
-    page = open_card({"Expression": '<div dir="rtl" lang="ar">الله</div>', "Sentence": "x"}, side="front").page
-    assert ligatures(page, ".front-vocab div") == "normal"
+# Arabic fonts join letters through common ligatures; Noto Thai joins ฤๅ and ฦๅ the same way.
+@pytest.mark.parametrize(
+    "expression,selector",
+    [('<div dir="rtl" lang="ar">الله</div>', ".front-vocab div"), ("ฤๅษี", ".front-vocab")],
+    ids=["ar", "th"],
+)
+def test_script_fonts_keep_their_common_ligatures(open_card, expression, selector):
+    page = open_card({"Expression": expression, "Sentence": "x"}, side="front").page
+    assert ligatures(page, selector) == "normal"
 
 
 KO_LONG = {
@@ -295,12 +301,23 @@ def test_back_headword_takes_room_from_the_picture_before_splitting(open_card, f
     assert card.errors == []
 
 
-@pytest.mark.parametrize("mobile", [False, True], ids=["desktop", "mobile"])
-def test_overlong_back_headword_keeps_the_picture_and_page_width(open_card, mobile):
-    fields = {"Expression": "Çekoslovakyalılaştıramadıklarımızdanmışsınız", "Sentence": "x", "Picture": PICTURE}
-    page = open_card(fields, mobile=mobile).page
+# Lapis's 60vw phone cap alone leaves a 320 px phone 86 px of picture beside a word that splits anyway.
+@pytest.mark.parametrize(
+    "word,mobile,width",
+    [
+        ("Çekoslovakyalılaştıramadıklarımızdanmışsınız", False, None),
+        ("Çekoslovakyalılaştıramadıklarımızdanmışsınız", True, None),
+        ("Çekoslovakyalılaştıramadıklarımızdanmışsınız", True, 320),
+        ("egészségügyi", True, 320),
+    ],
+    ids=["desktop", "mobile", "narrow", "narrow-hu"],
+)
+def test_overlong_back_headword_keeps_the_picture_and_page_width(open_card, word, mobile, width):
+    fields = {"Expression": word, "Sentence": "x", "Picture": PICTURE}
+    page = open_card(fields, mobile=mobile, width=width).page
     assert page.evaluate(FITS)
-    assert page.evaluate(WIDTH, ".dh-image") >= 100
+    assert page.eval_on_selector(".def-header", "e => e.scrollWidth <= e.clientWidth")
+    assert page.evaluate(WIDTH, ".dh-image img") >= 99.5
 
 
 def test_alt_picture_position_gives_the_headword_the_whole_row(open_card):
