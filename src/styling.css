@@ -1421,7 +1421,8 @@ html.mobile .sentence, html:not(.mobile) .sentence-alt,
 }
 
 /* Anki Miner writes Pinyin and Jyutping tone colours inline, one shade for both themes (about 3.5:1 on each).
-   Shift them toward the text colour so the reading line keeps 4.5:1. */
+   Shift them toward the text colour so the reading line keeps 4.5:1. Remove both rules in the same release in
+   which Anki Miner themes the tone colours itself, or the colours get shifted twice. */
 .card:not(.nightMode) .amn-reading span[style*="color"] {
   filter: brightness(0.75);
 }
