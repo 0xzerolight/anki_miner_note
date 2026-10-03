@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-An Anki note type for sentence mining in every language <a href="https://github.com/0xzerolight/anki_miner">Anki Miner</a> mines, Japanese included.
+An Anki note type for sentence mining in every language <a href="https://github.com/0xzerolight/anki_miner">Anki Miner</a> mines.
 </p>
 
 ## Installation
@@ -84,7 +84,7 @@ Lapis's other settings still apply; see [docs/user_settings.md](docs/user_settin
 
 ## Acknowledgements
 
-Anki Miner Note is a fork of [Lapis](https://github.com/donkuri/lapis) adapted to all languages. Thank you to the creators of Lapis for creating such an amazing note type.
+- Anki Miner Note is a fork of [Lapis](https://github.com/donkuri/lapis) adapted to all languages. Thank you to the creators of Lapis for creating such an amazing note type.
 
 ## License
 
