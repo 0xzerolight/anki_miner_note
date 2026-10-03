@@ -20,7 +20,7 @@ An Anki note type for sentence mining in every language <a href="https://github.
 - **[Anki Miner](https://github.com/0xzerolight/anki_miner)** to fill the cards
 
 1. Download `Anki-Miner-Note-*.apkg` from the [latest release](https://github.com/0xzerolight/anki_miner_note/releases/latest).
-2. In Anki, choose **File** -> **Import** and pick the file. This adds the **Anki Miner Note** note type and an example deck with one card per script.
+2. In Anki, choose **File** -> **Import** and pick the file. This adds the **Anki Miner Note** note type and an example deck.
 3. In Anki Miner, open **Settings** -> **Cards & Anki**, select the **Anki Miner Note** note type, then click **Fill in automatically**.
 
 ### Updating
