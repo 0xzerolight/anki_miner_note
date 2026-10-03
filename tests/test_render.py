@@ -200,6 +200,17 @@ JMDICT = (
 ANKI_MINER_STYLE = "<style>.yomitan-glossary{--anki-miner-owned-style: 1;}</style>"
 
 
+def test_anki_miner_list_style_turns_off_lapis_jmdict_separators(open_card):
+    """Anki Miner's inline rule ties Lapis's nested " | " rule on specificity and wins by coming later."""
+    style = (
+        "<style>.yomitan-glossary ol[data-count] li.gloss-sc-li{display: list-item;}"
+        ".yomitan-glossary ol[data-count] li.gloss-sc-li::before{content: none;}</style>"
+    )
+    page = open_card({"Expression": "食べる", "MainDefinition": JMDICT + style}).page
+    second = '#primary [data-sc-content="glossary"] > li:nth-child(2)'
+    assert page.eval_on_selector(second, "e => getComputedStyle(e, '::before').content") == "none"
+
+
 def test_japanese_anki_miner_back_runs_lapis_definition_and_pitch_code(open_card):
     """Anki Miner's real ja output (Lapis preset): Yomitan envelopes + style tail, <ul> Frequency, romaji categories."""
     card = open_card(

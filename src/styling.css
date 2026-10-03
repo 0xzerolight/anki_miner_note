@@ -818,9 +818,10 @@ summary {
 }
 
 /* Format Definitions */
+/* Anki Miner Note: :where() keeps the nested & at Lapis's specificity, so Anki Miner's inline list style still wins */
 ul[data-sc-content="glossary"],
 [data-sc-content="forms"] ul,
-.yomitan-glossary [data-dictionary^="JMdict"] ul:not([data-sc-content]) {
+:where(.yomitan-glossary) [data-dictionary^="JMdict"] ul:not([data-sc-content]) {
     display: inline;
     list-style: none;
     padding-left: 0!important;
