@@ -43,6 +43,14 @@ def test_japanese_back_keeps_lapis_furigana_and_pitch(open_card):
     assert page.locator(".pitch .pitch-item.nakadaka").count() == 1
 
 
+@pytest.mark.parametrize("mobile", [False, True], ids=["desktop", "mobile"])
+def test_audio_buttons_sit_in_the_header(open_card, mobile):
+    """Phones too: Lapis's mobile default ("fixed") pins them to the bottom-left corner (donkuri/lapis#147)."""
+    page = open_card({"Expression": "Hund"}, mobile=mobile).page
+    assert page.get_attribute("#lapis", "data-audio-buttons") == "header"
+    assert page.evaluate("getComputedStyle(document.querySelector('.audio-buttons')).position") == "static"
+
+
 def test_ascii_backslash_downstep_in_pitch_position(open_card):
     page = open_card({"Expression": "食べる", "ExpressionReading": "たべる", "PitchPosition": "た\\べる"}).page
     assert page.inner_text("#pitch-tags li") == "1"

@@ -95,7 +95,7 @@ PINYIN = '<span style="color:#be7500">y√≠n</span> <span style="color:#be7500">h√
     ids=["pinyin", "jyutping", "romanization", "chip"],
 )
 def test_no_blank_reading_line_on_mobile(open_card, fields, below):
-    """On phones the audio buttons leave .info; its <br> must not leave a blank line under the headword."""
+    """On phones the <br> in .info must not leave a blank line under the headword."""
     page = open_card(fields, mobile=True).page
     gap = page.evaluate(
         "below => document.querySelector(below).getBoundingClientRect().top"

@@ -60,7 +60,7 @@
 
   --mobile-main-picture-position: "right"; /* "left", "right", "alt" */
   --mobile-sentence-position: "below";
-  --mobile-audio-buttons: "fixed"; /* "fixed", "header", "alt" */
+  --mobile-audio-buttons: "header"; /* "fixed", "header", "alt" (Anki Miner Note: Lapis ships "fixed") */
 
   /* Pitch colors */
   --dark-mode-heiban: #39bae6;
@@ -1345,7 +1345,8 @@ html.mobile .sentence, html:not(.mobile) .sentence-alt,
   overflow-wrap: anywhere;
 }
 
-/* On phones the audio buttons leave .info (position: fixed), so its <br> only adds a blank line. */
+/* On phones the <br> in .info only adds a blank line: .audio-buttons is a block of its own,
+   or leaves .info entirely when --mobile-audio-buttons is "fixed". */
 .mobile .info > br {
   display: none;
 }
