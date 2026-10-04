@@ -3,7 +3,7 @@
 
 Run it with Anki Miner's interpreter:
     ~/Projects/anki_miner/.venv/bin/python scripts/check_anki_miner_mapping.py
-Exit 0: every language maps (known gaps allowed). 1: a regression. 2: anki_miner not installed (skip).
+Exit 0: every language maps through the Anki Miner Note preset. 1: a regression. 2: anki_miner not installed (skip).
 """
 
 import sys
@@ -21,10 +21,6 @@ CORE_KEYS = (
     "expression_reading",
     "sentence_translation",
 )
-# Fields Anki Miner cannot fill yet; the Anki Miner integration closes each. ja: the Lapis preset maps no
-# SentenceTranslation. he: its part-of-speech placeholder is POS, not PartOfSpeech. th: its Paiboon reading
-# placeholder is Reading, which has no field here.
-KNOWN_GAPS = {("ja", "sentence_translation"), ("he", "POS"), ("th", "Reading")}
 
 
 def main() -> int:
@@ -47,14 +43,10 @@ def main() -> int:
             allow_presets="note_presets" in profile.capabilities,
             extra_specs=profile.extra_card_fields,
         )
-        problems = [key for key in CORE_KEYS if not fill.fields.get(key) and (lang, key) not in KNOWN_GAPS]
-        problems += [
-            spec.placeholder
-            for spec in profile.extra_card_fields
-            if spec.key not in fill.extra_fields and (lang, spec.placeholder) not in KNOWN_GAPS
-        ]
-        if lang == "ja" and (fill.preset is None or fill.preset.id != "lapis"):
-            problems.append("ja must resolve to the Lapis preset")
+        problems = [key for key in CORE_KEYS if not fill.fields.get(key)]
+        problems += [spec.placeholder for spec in profile.extra_card_fields if spec.key not in fill.extra_fields]
+        if fill.preset is None or fill.preset.id != "anki_miner_note":
+            problems.append("must resolve to the Anki Miner Note preset")
         print(f"{lang:4} {'ok' if not problems else 'FAIL ' + ', '.join(problems)}")
         if problems:
             failed.append(lang)
