@@ -12,6 +12,12 @@
 An Anki note type for sentence mining in every language <a href="https://github.com/0xzerolight/anki_miner">Anki Miner</a> mines.
 </p>
 
+<p align="center">
+<img src="assets/example_card.gif" width="480" alt="Example card for ホント">
+</p>
+
+<p align="center">⬇️ <a href="https://raw.githubusercontent.com/0xzerolight/anki_miner_note/main/assets/example_card.mp4">MP4 (sound)</a></p>
+
 ## Installation
 
 ### Requirements
