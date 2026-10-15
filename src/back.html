@@ -623,9 +623,11 @@
         let defContainer = document.querySelector(".main-def");
         defContainer.appendChild(style);
 
-        // Anki Miner's style tail draws a rule above each stacked .yomitan-glossary, and a wrapper whose
-        // dictionaries are all hidden still counts as the sibling: drop it. A wrapper naming no dictionary
-        // (a hand-written list) or holding Yomitan's scoped <style> stays, as in movePrimaryDicts.
+        // Cards Anki Miner wrote before its Yomitan-shaped output (old cards, until Restyle converts them)
+        // can stack .yomitan-glossary wrappers whose style tail draws a rule above each; new cards hold
+        // one wrapper. A wrapper whose dictionaries are all hidden still counts as the sibling: drop it.
+        // A wrapper naming no dictionary (a hand-written list) or holding a scoped <style> stays, as in
+        // movePrimaryDicts.
         const hidden = new Set(Array.from(primaryDicts, (dict) => dict.dataset.dictionary));
         document.querySelectorAll("#glossaries .yomitan-glossary").forEach((wrapper) => {
             const dicts = Array.from(wrapper.querySelectorAll("li[data-dictionary]"));
