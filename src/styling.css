@@ -864,6 +864,14 @@ li[data-dictionary^="JMdict"] i {
   font-style: italic;
 }
 
+/* Anki Miner Note: the tag line Yomitan writes before each definition, <i>(tags, dictionary)</i>.
+   Smaller and muted so the glosses read first; Yomitan- and Anki Miner-mined cards alike. */
+.definition li[data-dictionary] > i {
+  font-size: 0.8em;
+  font-style: normal;
+  opacity: 0.7;
+}
+
 .definition a span {
   max-width: 300px !important;
 }
