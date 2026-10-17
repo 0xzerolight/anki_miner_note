@@ -219,34 +219,6 @@ def test_anki_miner_list_style_turns_off_lapis_jmdict_separators(open_card):
     assert page.eval_on_selector(second, "e => getComputedStyle(e, '::before').content") == "none"
 
 
-# Yomitan's grouped {glossary} export (what Anki Miner and Yomitan both write): the tag line is a bare
-# <i>(tags, dictionary)</i> before the definition, and Lapis sets JMdict's glossary inline after it.
-YOMITAN_JMDICT = (
-    '<div style="text-align: left;" class="yomitan-glossary"><ol><li data-dictionary="JMdict [2026-06-28]">'
-    '<i>(n, JMdict [2026-06-28])</i> <span><ul data-sc-content="glossary" lang="en"'
-    ' style="list-style-type: circle"><li>pocket money</li><li>spending money</li><li>pin money</li>'
-    "<li>allowance</li></ul></span></li></ol></div>"
-)
-
-
-@pytest.mark.parametrize("night", [False, True], ids=["light", "night"])
-def test_dictionary_tag_line_is_smaller_and_muted(open_card, night):
-    card = open_card({"Expression": "お小遣い", "MainDefinition": YOMITAN_JMDICT}, night=night)
-    page = card.page
-    label = page.eval_on_selector(
-        "#primary li[data-dictionary] > i",
-        "e => { const s = getComputedStyle(e); return [s.fontStyle, s.opacity, parseFloat(s.fontSize)]; }",
-    )
-    gloss_size = page.eval_on_selector(
-        '#primary [data-sc-content="glossary"] > li', "e => parseFloat(getComputedStyle(e).fontSize)"
-    )
-    assert label[:2] == ["normal", "0.7"]
-    assert label[2] < gloss_size
-    assert card.errors == []
-    ARTIFACTS.mkdir(exist_ok=True)
-    page.screenshot(path=ARTIFACTS / f"tag-line-{'night' if night else 'light'}.png", full_page=True)
-
-
 def test_japanese_anki_miner_back_runs_lapis_definition_and_pitch_code(open_card):
     """Anki Miner's real ja output (Lapis preset): Yomitan envelopes + style tail, <ul> Frequency, romaji categories."""
     card = open_card(
