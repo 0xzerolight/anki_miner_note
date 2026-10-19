@@ -60,7 +60,7 @@ body:
     attributes:
       label: Anki client version
       description: Help -> About in Anki desktop, the About screen on AnkiDroid or AnkiMobile.
-      placeholder: 24.11
+      placeholder: "24.11"
     validations:
       required: true
 
@@ -87,7 +87,7 @@ body:
       label: Card type
       description: Which `Is…Card` field is filled?
       options:
-        - None (word card)
+        - Word card (no Is…Card field filled)
         - IsWordAndSentenceCard
         - IsClickCard
         - IsSentenceCard
