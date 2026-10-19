@@ -92,6 +92,19 @@ Lapis's other settings still apply; see [docs/user_settings.md](docs/user_settin
 
 - Anki Miner Note is a fork of [Lapis](https://github.com/donkuri/lapis) adapted to all languages. Thank you to the creators of Lapis for creating such an amazing note type.
 
+## Contributing
+
+Contributions of any kind are welcome.
+
+- New here? Start with [CONTRIBUTING.md](CONTRIBUTING.md).
+- Code of Conduct: [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+- Security: [SECURITY.md](SECURITY.md).
+
+Bug reports and feature requests -> [Issues](https://github.com/0xzerolight/anki_miner_note/issues).
+General questions and discussion -> [Discussions](https://github.com/0xzerolight/anki_miner_note/discussions) or [Discord](https://discord.com/invite/aDtQyZzUVP).
+
+See [CONTRIBUTORS.md](CONTRIBUTORS.md) for everyone who has contributed.
+
 ## License
 
 GNU General Public License v3.0. See [LICENSE](LICENSE).

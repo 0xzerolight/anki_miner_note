@@ -1,0 +1,35 @@
+name: Feature request
+description: Suggest a new feature or enhancement for Anki Miner Note.
+title: "[Feature]: "
+labels:
+  - feature
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sharing an idea. Before filing, please skim existing Issues and Discussions
+        in case it has already been raised.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / use case
+      description: What problem does this solve? What workflow would it enable or improve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: How would you like this to work?
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Screenshots, references, related projects, anything else.
+    validations:
+      required: false

@@ -1,0 +1,134 @@
+name: Bug report
+description: Report a bug to help improve Anki Miner Note.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to file a bug report.
+        Please fill in as much detail as you can - it makes the fix faster.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What went wrong? Include what you expected to happen and what actually happened.
+      placeholder: When I do X, Y happens instead of Z.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Minimal steps that reliably trigger the bug.
+      placeholder: |
+        1. Mine a word with Anki Miner.
+        2. Open the card in Anki.
+        3. Flip to the back.
+        4. Observe the problem.
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Anki Miner Note version
+      description: The release you imported; the `.apkg` file name carries it. Please import the latest release first to see if that fixes the bug.
+      placeholder: 1.0.2
+    validations:
+      required: true
+
+  - type: dropdown
+    id: client
+    attributes:
+      label: Anki client
+      description: Where does the card look wrong?
+      multiple: true
+      options:
+        - Anki desktop
+        - AnkiDroid
+        - AnkiMobile (iOS)
+        - AnkiWeb
+    validations:
+      required: true
+
+  - type: input
+    id: client_version
+    attributes:
+      label: Anki client version
+      description: Help -> About in Anki desktop, the About screen on AnkiDroid or AnkiMobile.
+      placeholder: 24.11
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating system or device
+      description: e.g. Windows 11, macOS 15.2, Ubuntu 24.04, Pixel 7 / Android 14, iPhone 15 / iOS 18.
+    validations:
+      required: true
+
+  - type: input
+    id: language
+    attributes:
+      label: Language
+      description: The card's `Language` field, or the language you mine in if the field is empty.
+      placeholder: e.g. ja, zh-Hans, ar
+    validations:
+      required: true
+
+  - type: dropdown
+    id: card_type
+    attributes:
+      label: Card type
+      description: Which `Is…Card` field is filled?
+      options:
+        - None (word card)
+        - IsWordAndSentenceCard
+        - IsClickCard
+        - IsSentenceCard
+        - IsAudioCard
+    validations:
+      required: false
+
+  - type: dropdown
+    id: styling_edited
+    attributes:
+      label: Styling edited?
+      description: Have you changed the note type's Styling or templates?
+      options:
+        - "No"
+        - "Yes, the font variables only"
+        - "Yes, other changes"
+    validations:
+      required: true
+
+  - type: upload
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: The card as it looks, front and back. Say whether night mode is on.
+    validations:
+      required: false
+      accept: ".png,.jpg,.jpeg,.gif,.webp,.mp4"
+
+  - type: textarea
+    id: fields
+    attributes:
+      label: Field contents (optional)
+      description: In Anki desktop's Browse window, select the note, click into the field that misbehaves, press Ctrl+Shift+X (HTML editor) and paste its HTML here.
+      render: html
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Anki Miner version, add-ons that touch cards, anything else that may be relevant. More detail > less detail.
+    validations:
+      required: false
