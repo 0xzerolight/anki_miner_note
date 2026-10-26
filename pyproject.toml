@@ -11,7 +11,7 @@ dev = [
     "genanki==0.13.1",
     "pyyaml==6.0.3",
     "anki==26.9.3",
-    "playwright==1.64.0",
+    "playwright==1.64.1",
     "pytest==9.1.1",
     "ruff==0.17.1",
 ]
