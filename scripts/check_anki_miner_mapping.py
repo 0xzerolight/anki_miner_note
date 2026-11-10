@@ -40,7 +40,7 @@ def main() -> int:
         profile = get_profile(lang)
         fill = fill_note_type_fields(
             fields,
-            allow_presets="note_presets" in profile.capabilities,
+            capabilities=profile.capabilities,
             extra_specs=profile.extra_card_fields,
         )
         problems = [key for key in CORE_KEYS if not fill.fields.get(key)]
