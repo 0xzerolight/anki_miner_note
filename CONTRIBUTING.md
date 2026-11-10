@@ -37,7 +37,7 @@ The font tests assert the Noto faces CI installs (`sudo apt-get install -y fonts
 
 ## Code style
 
-- **ruff** for linting and formatting, 120-character lines: `uv run ruff check .` and `uv run ruff format .`.
+- **ruff** for linting and formatting, 120-character lines: `uv run ruff check .` and `uv run ruff format .`. [pre-commit.ci](https://pre-commit.ci) runs the same hooks on your PR and pushes a fix commit if needed.
 - The card is mostly Lapis. Additions carry the `amn-` prefix or an `Anki Miner Note` comment, and the CSS ends with the `ANKI MINER NOTE: LANGUAGES` and `EXTRAS` sections. Keep Lapis's own code recognisable so upstream fixes still merge.
 - Field order is a contract: append a new field at the end of both `build/anki_fields.yaml` and `build/fields.lock`, and never rename, remove or reorder one. `test_fields_are_lock_plus_appended` enforces it.
 - Conventional Commits are preferred (`feat:`, `fix:`, `docs:`, `chore:`, `refactor:`, `test:`, `ci:`).
