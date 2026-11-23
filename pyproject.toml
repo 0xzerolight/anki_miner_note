@@ -13,7 +13,7 @@ dev = [
     "anki==26.9.4",
     "playwright==1.65.2",
     "pytest==9.2.0",
-    "ruff==0.17.5",
+    "ruff==0.17.6",
 ]
 
 [tool.uv]
